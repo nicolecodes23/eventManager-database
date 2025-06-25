@@ -1,1 +1,247 @@
-/* Define styles */
+:root {
+    --dark-grey: #90908F;
+    --light-grey: #F2F2F2;
+    --white: #FFFFFF;
+    --black: #020202;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: content-box;
+}
+
+body {
+    background-color: white;
+}
+
+.parallax {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: 1;
+    position: relative;
+}
+
+.quick-intro {
+    width: 100%;
+    height: 20%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.quick-intro h3 {
+    font-size: 1.2rem;
+    padding: 5px;
+    color: var(--dark-grey);
+}
+
+.parallax h1 {
+    font-size: 5rem;
+    padding: 5px;
+    margin: 5px 0;
+}
+
+
+
+.description {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 2rem 3rem;
+    /* adds breathing room from edges */
+    box-sizing: border-box;
+    gap: 2rem;
+}
+
+.left-section,
+.right-section,
+.center-section {
+    margin: 3rem 5px;
+    padding: 5px;
+    min-height: 500px;
+    flex: 1 1 200px;
+    /* fixed width */
+}
+
+.left-section {
+    text-align: right;
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.right-section {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.slider-vertical {
+    position: relative;
+    width: 200px;
+    height: 300px;
+    transform-style: preserve-3d;
+    transform: perspective(1200px);
+}
+
+.left-section .slider-vertical {
+    transform: rotateZ(55deg);
+    animation: spinVerticalLeft 20s linear infinite;
+}
+
+@keyframes spinVerticalLeft {
+    from {
+        transform: rotateY(-35deg) rotateX(0deg);
+    }
+
+    to {
+        transform: rotateY(35deg) rotateX(360deg);
+    }
+}
+
+.slider-vertical .item {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform:
+        rotateX(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(400px);
+}
+
+.slider-vertical .item img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.mirrored {
+    transform: perspective(1200px) scaleX(-1);
+    animation: spinVerticalMirrored 20s linear infinite;
+}
+
+
+@keyframes spinVerticalRight {
+    from {
+        transform: rotateY(35deg) rotateX(0deg);
+    }
+
+    to {
+        transform: rotateY(-25deg) rotateX(360deg);
+    }
+}
+
+.right-section .slider-vertical {
+    transform: rotateY(-55deg);
+    animation: spinVerticalRight 20s linear infinite;
+    margin-right: 2rem;
+}
+
+.center-section {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    text-align: center;
+}
+
+.center-section p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.center-section span {
+    font-style: italic;
+}
+
+.main-bottom {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    z-index: 2;
+}
+
+.main-bottom h2 {
+    margin: 1rem 2rem;
+    position: relative;
+    top: -5%;
+    padding: 5px;
+    font-size: 3rem;
+
+}
+
+.choice-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    padding: 2rem;
+}
+
+.choice-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 12px;
+    width: 100%;
+    transition: transform 0.3s ease;
+    background-color: var(--light-grey);
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.2s ease-out;
+    cursor: pointer;
+}
+
+.choice-card:hover {
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.07);
+}
+
+.choice-card img {
+    width: 50%;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.choice-link {
+    text-decoration: none;
+    color: var(--black);
+}
+
+
+@media (max-width: 768px) {
+    .slider-vertical {
+        width: 120px;
+        /* smaller width */
+        height: 180px;
+        /* smaller height */
+        transform-style: preserve-3d;
+        transform: perspective(800px);
+        /* slightly closer */
+    }
+
+    .slider-vertical .item {
+        transform:
+            rotateX(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(200px);
+        /* reduced translateZ = smaller, tighter circle */
+    }
+
+    .slider-vertical .item img {
+        width: 90%;
+        height: auto;
+        object-fit: contain;
+    }
+}
