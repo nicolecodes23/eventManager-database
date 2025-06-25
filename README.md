@@ -24,8 +24,12 @@ or run ```npm run build-db-win``` to create the database on Windows
 Test the app by browsing to the following routes:
 
 * http://localhost:3000
-* http://localhost:3000/users/list-users
-* http://localhost:3000/users/add-user
+* http://localhost:3000/organiser 
+* http://localhost:3000/organiser/settings 
+* http://localhost:3000/organiser/events/edit/1 
+* http://localhost:3000/attendee
+* http://localhost:3000/attendee/event/1
+
 
 You can also run: 
 ```npm run clean-db``` to delete the database on Mac or Linux before rebuilding it for a fresh start
