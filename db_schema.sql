@@ -15,7 +15,7 @@ CREATE TABLE Event (
     event_ID INTEGER PRIMARY KEY,
     event_title VARCHAR(255) NOT NULL,
     event_description TEXT NOT NULL,
-    event_date DATE NOT NULL,
+    event_datetime DATETIME NOT NULL,
     event_status VARCHAR(20) NOT NULL CHECK (event_status IN ('draft','published')),
     created_at DATETIME NOT NULL,
     modified_at DATETIME,
