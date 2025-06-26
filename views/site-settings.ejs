@@ -34,8 +34,9 @@
                         <br>
 
                         <label for="site_description">Site Description: </label>
-                        <input type="text" id="site_description" name="site_description"
-                            value="<%= site.site_description %>" required>
+                        <textarea id="site_description" name="site_description" required rows="4"><%= site.site_description %>
+                        </textarea>
+
                         <br>
                         <button type="submit" class="submit">Save Changes</button>
                     </form>
