@@ -9,20 +9,41 @@
 </head>
 
 <body>
-<div class="container">
-    <main class="main-content">
-        <header class="topbar">
-        </header>
-        <section class="settings-content">
-            <div class="settings-img"></div>
-            <div class="settings-panel">
-                
-            </div>
-        </section>
-    </main>
+    <div class="container">
+        <main class="main-content">
+            <header class="topbar">
+                <h1>This is the site settings (organiser) page</h1>
+                <a href="/organiser">
+                    <button class="return-organiser-home-btn">
+                        Return Organiser Home
+                    </button>
+                </a>
+                <section class="avatar">
+                    <img src="/assets/Organiser.png" alt="Men in suit">
+                </section>
+            </header>
 
-</div>
-    <h1>This is the site settings (organiser) page</h1>
+            <section class="settings-content">
+                <div class="settings-img">
+                    <img src="/assets/settings.png" alt="Setting icon">
+                </div>
+                <div class="settings-panel">
+                    <form action="/organiser/settings" method="POST">
+                        <label for="site_name">Site name: </label>
+                        <input type="text" id="site_name" name="site_name" value="<%= site.site_name%>" required>
+                        <br>
+
+                        <label for="site_description">Site Description: </label>
+                        <input type="text" id="site_description" name="site_description"
+                            value="<%= site.site_description %>" required>
+                        <br>
+                        <button type="submit" class="submit">Save Changes</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+    </div>
 </body>
 
 </html>

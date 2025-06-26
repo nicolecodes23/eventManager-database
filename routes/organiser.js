@@ -15,10 +15,16 @@ router.get('/settings', (req, res) => {
         if (err) {
             return res.status(500).send("Database error retrieving");
         }
-        res.render('site-settings', { site: row }); //site-settings.ejs
 
+        if (!row) {
+            // Handle missing row (e.g., insert a default setting if empty)
+            return res.status(404).send("Site settings not found in database.");
+        }
+
+        res.render('site-settings', { site: row });
     });
 });
+
 
 // Route: POST /organiser/settings
 // Purpose: Update site name and description, then redirect to organiser home
