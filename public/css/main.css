@@ -3,6 +3,7 @@
     --light-grey: #F2F2F2;
     --white: #FFFFFF;
     --black: #020202;
+    --sand: #EEE5DC;
 }
 
 * {
@@ -13,6 +14,12 @@
 
 body {
     background-color: white;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+
+h3 {
+    font-weight: 600;
 }
 
 .parallax {
@@ -31,26 +38,20 @@ body {
 }
 
 .quick-intro {
-    width: 100%;
+    width: 80%;
     height: 20%;
     display: flex;
     justify-content: space-evenly;
-    align-items: center;
+    align-items: flex-end;
 }
 
 .quick-intro h3 {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     padding: 5px;
     color: var(--dark-grey);
+    position: relative;
+    bottom: 0;
 }
-
-.parallax h1 {
-    font-size: 5rem;
-    padding: 5px;
-    margin: 5px 0;
-}
-
-
 
 .description {
     display: flex;
@@ -63,6 +64,13 @@ body {
     gap: 2rem;
 }
 
+.center-section h1 {
+    font-size: 12rem;
+    padding: 5px;
+    margin: 5px 0;
+    z-index: 3;
+}
+
 .left-section,
 .right-section,
 .center-section {
@@ -70,7 +78,6 @@ body {
     padding: 5px;
     min-height: 500px;
     flex: 1 1 200px;
-    /* fixed width */
 }
 
 .left-section {
@@ -102,11 +109,11 @@ body {
 
 @keyframes spinVerticalLeft {
     from {
-        transform: rotateY(-35deg) rotateX(0deg);
+        transform: rotateY(35deg) rotateX(0deg);
     }
 
     to {
-        transform: rotateY(35deg) rotateX(360deg);
+        transform: rotateY(-35deg) rotateX(360deg);
     }
 }
 
@@ -132,11 +139,11 @@ body {
 
 @keyframes spinVerticalRight {
     from {
-        transform: rotateY(35deg) rotateX(0deg);
+        transform: rotateY(-35deg) rotateX(0deg);
     }
 
     to {
-        transform: rotateY(-25deg) rotateX(360deg);
+        transform: rotateY(35deg) rotateX(360deg);
     }
 }
 
@@ -207,6 +214,7 @@ body {
 
 .choice-card:hover {
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.07);
+    background-color: var(--sand);
 }
 
 .choice-card img {
@@ -223,6 +231,34 @@ body {
 
 
 @media (max-width: 768px) {
+
+
+    .parallax,
+    .description {
+        overflow-x: clip;
+    }
+
+    .description {
+        padding: 1rem;
+    }
+
+    .quick-intro h3 {
+        font-size: 1.2rem;
+    }
+
+    .center-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .center-section h1 {
+        font-size: 5rem;
+        padding: 5px;
+        margin: 5px 0;
+        z-index: 3;
+    }
+
     .slider-vertical {
         width: 120px;
         /* smaller width */
@@ -235,7 +271,7 @@ body {
 
     .slider-vertical .item {
         transform:
-            rotateX(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(200px);
+            rotateX(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(150px);
         /* reduced translateZ = smaller, tighter circle */
     }
 
