@@ -11,10 +11,98 @@
 <body>
     <div class="container">
         <main class="main-content">
-            
+            <header class="topbar">
+                <h1>Organise Home Page</h1>
+                <button class="return-site-btn">
+                    Return Site Settings
+                </button>
+                <section class="avatar">
+                    <img src="/assets/Organiser.png" alt="Men in suit">
+                </section>
+            </header>
+            <div class="home-content">
+                <div class="left-section">
+                    <section class="left-top">
+                        <h2>Event Activity</h2>
+                        <section class="create-button">
+                            <form action="/organiser/edit" method="POST">
+                                <button type="submit">+ Create New Event</button>
+                            </form>
+                        </section>
+                        <section class="event-counts">
+                            <div class="count-box">
+                                <p class="count-number">
+                                    <%= totalEvents %>
+                                </p>
+                                <p class="count-label">Total</p>
+                            </div>
+                            <div class="count-box">
+                                <p class="count-number">
+                                    <%= draftCount %>
+                                </p>
+                                <p class="count-label">Draft</p>
+                            </div>
+                            <div class="count-box">
+                                <p class="count-number">
+                                    <%= publishedCount %>
+                                </p>
+                                <p class="count-label">Published</p>
+                            </div>
+                        </section>
+                    </section>
+                    <div class="draft-events">
+                        <h3>Draft Events</h3>
+
+                        <% if (drafts.length===0) { %>
+                            <p>No drafts event yet.</p>
+                            <% } else { %>
+                                <% drafts.forEach(event=> { %>
+                                    <div class="event-card">
+                                        <img src="/assets/<%= event.image %>" alt="Event image of Yoga Pose"
+                                            class="event-image">
+                                        <h4>
+                                            <%= event.event_title %>
+                                        </h4>
+                                        <p>Date: <%= event.event_datetime %>
+                                        </p>
+                                        <p>Created: <%= event.created_at %>
+                                        </p>
+
+                                        <div class="ticket-info">
+                                            <% if (event.tickets.length===0) { %>
+                                                <p>No tickets added yet.</p>
+                                                <% } else { %>
+                                                    <% event.tickets.forEach(ticket=> { %>
+                                                        <div class="ticket-badge">
+                                                            <span>
+                                                                <%= ticket.type %>
+                                                            </span>
+                                                            <span>
+                                                                <%= ticket.quantity %> available
+                                                            </span>
+                                                            <span>$<%= ticket.price %></span>
+                                                        </div>
+                                                        <% }) %>
+                                                            <% } %>
+                                        </div>
+
+                                        <a href="/organiser/events/edit/<%= event.event_ID %>">Edit</a>
+                                        <form action="/organiser/publish/<%= event.event_ID %>" method="POST">
+                                            <button type="submit">Publish</button>
+                                        </form>
+                                        <form action="/organiser/delete/<%= event.event_ID %>" method="POST"
+                                            onsubmit="return confirm('Delete this draft?')">
+                                            <button type="submit">Delete</button>
+                                        </form>
+                                    </div>
+                                    <% }) %>
+                                        <% } %>
+                    </div>
+
+                </div>
+            </div>
         </main>
     </div>
-    <h1>This is the organiser home page</h1>
 </body>
 
 </html>
