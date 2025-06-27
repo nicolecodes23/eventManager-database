@@ -98,6 +98,67 @@
                                     <% }) %>
                                         <% } %>
                     </div>
+                </div>
+                <div class="right-section">
+                    <section class="site-info">
+                        <h2> Welcome to 
+                            <%= siteInfo.site_name %>
+                        </h2>
+                        <p>
+                            <%= siteInfo.site_description %>
+                        </p>
+                        <a href="/organiser/settings">
+                            <button>
+                                Edit Site Settings
+                            </button>
+                        </a>
+                    </section>
+                    <div class="published-events">
+                        <h3>Published Events</h3>
+
+                        <% if (published.length===0) { %>
+                            <p>No published events yet.</p>
+                            <% } else { %>
+                                <% published.forEach(event=> { %>
+                                    <div class="event-card published-card">
+                                        <!-- Left big date / event ID -->
+                                        <div class="event-date-box">
+                                            <p class="event-id">
+                                                <%= event.event_ID %>
+                                            </p>
+                                        </div>
+
+                                        <!-- Right event info -->
+                                        <div class="event-details">
+                                            <h4>
+                                                <%= event.event_title %>
+                                            </h4>
+                                            <p><strong>Date:</strong>
+                                                <%= event.event_datetime %>
+                                            </p>
+                                            <p><strong>Created:</strong>
+                                                <%= event.created_at %>
+                                            </p>
+                                            <p><strong>Published:</strong>
+                                                <%= event.published_at %>
+                                            </p>
+                                            <p><strong>Tickets:</strong>
+                                                <%= event.tickets %>
+                                            </p>
+
+                                            <div class="event-actions">
+                                                <a href="/attendee/event/<%= event.event_ID %>" class="share-link">View
+                                                    as Attendee</a>
+                                                <form action="/organiser/delete/<%= event.event_ID %>" method="POST"
+                                                    onsubmit="return confirm('Delete this event?')">
+                                                    <button type="submit">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } %>
+                    </div>
 
                 </div>
             </div>

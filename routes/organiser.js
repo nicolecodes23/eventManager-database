@@ -6,9 +6,16 @@ const db = new sqlite3.Database('database.db');
 // GET method gets organiser home page
 router.get('/', async (req, res) => {
     try {
-        const siteInfo = await db.get(
-            'SELECT site_name, site_description FROM SiteSettings WHERE site_setting_ID = 1'
-        );
+        const siteInfo = await new Promise((resolve, reject) => {
+            db.get(
+                'SELECT site_name, site_description FROM SiteSettings WHERE site_setting_ID = 1',
+                (err, row) => {
+                    if (err) reject(err);
+                    else resolve(row);
+                }
+            );
+        });
+
 
         const totalEvents = await db.get('SELECT COUNT(*) AS count FROM Event');
         const draftEvents = await db.get("SELECT COUNT(*) AS count FROM Event WHERE event_status = 'draft'");
@@ -22,6 +29,7 @@ router.get('/', async (req, res) => {
               LEFT JOIN TicketType tt ON e.event_ID = tt.event_ID
               WHERE e.event_status = 'published'
               GROUP BY e.event_ID
+              ORDER BY e.event_datetime ASC
               `,
                 (err, rows) => {
                     if (err) reject(err);
@@ -38,7 +46,7 @@ router.get('/', async (req, res) => {
                 FROM Event e
                 LEFT JOIN TicketType tt ON e.event_ID = tt.event_ID
                 WHERE e.event_status = 'draft'
-                ORDER BY e.event_ID
+                ORDER BY e.event_datetime ASC
             `, (err, rows) => {
                 if (err) reject(err);
                 else resolve(rows);
