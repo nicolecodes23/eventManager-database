@@ -48,32 +48,6 @@ router.get('/', async (req, res) => {
 });
 
 
-const siteInfo = await db.get('SELECT site_name, site_description FROM SiteSettings WHERE site_setting_ID = 1');
-const totalEvents = await db.get('SELECT COUNT(*) AS count FROM Event');
-const draftEvents = await db.get("SELECT COUNT(*) AS count FROM Event WHERE event_status = 'draft'");
-const publishedEvents = await db.get("SELECT COUNT(*) AS count FROM Event WHERE event_status = 'published'");
-
-const published = await db.all(`
-    SELECT e.event_ID, e.event_title, e.event_datetime, e.created_at, e.published_at,
-           GROUP_CONCAT(tt.ticket_type || ' ($' || tt.price || ') - Qty: ' || tt.quantity_available, ', ') AS tickets
-    FROM Event e
-    LEFT JOIN TicketType tt ON e.event_ID = tt.event_ID
-    WHERE e.event_status = 'published'
-    GROUP BY e.event_ID
-`);
-
-const drafts = await db.all(`
-    SELECT e.event_ID, e.event_title, e.event_datetime, e.created_at, e.published_at,
-           GROUP_CONCAT(tt.ticket_type || ' ($' || tt.price || ') - Qty: ' || tt.quantity_available, ', ') AS tickets
-    FROM Event e
-    LEFT JOIN TicketType tt ON e.event_ID = tt.event_ID
-    WHERE e.event_status = 'draft'
-    GROUP BY e.event_ID
-`);
-
-
-
-
 // GET method gets site settings page through organiser home page
 //Render site settings page with current name and description 
 router.get('/settings', (req, res) => {
