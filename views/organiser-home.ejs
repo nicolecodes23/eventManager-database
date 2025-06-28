@@ -12,10 +12,12 @@
     <div class="container">
         <main class="main-content">
             <header class="topbar">
-                <h1>Organise Home Page</h1>
-                <button class="return-site-btn">
-                    Return Site Settings
-                </button>
+                <h1>Organiser Home Page</h1>
+                <a href="/organiser/settings">
+                    <button class="return-site-btn">
+                        Return Site Settings
+                    </button>
+                </a>
                 <section class="avatar">
                     <img src="/assets/Organiser.png" alt="Men in suit">
                 </section>
@@ -24,27 +26,30 @@
                 <div class="left-section">
                     <section class="left-top">
                         <h2>Event Activity</h2>
-                        <section class="create-button">
-                            <form action="/organiser/edit" method="POST">
+                        <section class="create-btn">
+                            <form action="/organiser/create" method="POST">
                                 <button type="submit">+ Create New Event</button>
                             </form>
                         </section>
                         <section class="event-counts">
                             <div class="count-box">
                                 <p class="count-number">
-                                    <%= totalEvents %>
+                                    <!-- <%= totalEvents %> -->
+                                    16
                                 </p>
                                 <p class="count-label">Total</p>
                             </div>
                             <div class="count-box">
                                 <p class="count-number">
-                                    <%= draftCount %>
+                                    <!-- <%= draftCount %> -->
+                                    9
                                 </p>
                                 <p class="count-label">Draft</p>
                             </div>
                             <div class="count-box">
                                 <p class="count-number">
-                                    <%= publishedCount %>
+                                    <!-- <%= publishedCount %> -->
+                                    1
                                 </p>
                                 <p class="count-label">Published</p>
                             </div>
@@ -101,7 +106,7 @@
                 </div>
                 <div class="right-section">
                     <section class="site-info">
-                        <h2> Welcome to 
+                        <h2> Welcome to
                             <%= siteInfo.site_name %>
                         </h2>
                         <p>

@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('database.db');
+const db = new sqlite3.Database('database.db', (err) => {
+    if (err) console.error(err);
+    else db.run('PRAGMA foreign_keys = ON');
+});
 
 // GET method gets organiser home page
 router.get('/', async (req, res) => {
@@ -144,5 +147,68 @@ router.post('/settings', (req, res) => {
 router.get('/events/edit/:id', (req, res) => {
     res.render('organiser-edit'); //organiser-edit.ejs
 });
+
+// Route: POST /organiser/create
+// Purpose: Create a new draft event and redirect to edit page
+router.post('/create', (req, res) => {
+    const sql = `
+        INSERT INTO Event (event_title, event_description, event_datetime, created_at, event_status)
+        VALUES (?, ?, ?, datetime('now'), 'draft')
+    `;
+    const defaultTitle = 'Untitled Event';
+    const defaultDescription = '';
+    const defaultDate = new Date().toISOString().split('T')[0]; // today's date (YYYY-MM-DD)
+
+    db.run(sql, [defaultTitle, defaultDescription, defaultDate], function (err) {
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Failed to create event.");
+        }
+        // this.lastID contains the new event_ID
+        res.redirect(`/organiser/events/edit/${this.lastID}`);
+    });
+});
+
+// Route: POST /organiser/publish/:id
+// Purpose: Publish an event by updating its status and publication date
+router.post('/publish/:id', (req, res) => {
+    const { id } = req.params;
+
+    const sql = `
+        UPDATE Event
+        SET event_status = 'published',
+            published_at = datetime('now')
+        WHERE event_ID = ?
+    `;
+
+    db.run(sql, [id], function (err) {
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Failed to publish event.");
+        }
+        res.redirect('/organiser');
+    });
+});
+
+// Route: POST /organiser/delete/:id
+// Purpose: Delete an event and associated tickets
+router.post('/delete/:id', (req, res) => {
+    const { id } = req.params;
+
+    const sql = `
+        DELETE FROM Event
+        WHERE event_ID = ?
+    `;
+
+    db.run(sql, [id], function (err) {
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Failed to delete event.");
+        }
+        res.redirect('/organiser');
+    });
+});
+
+
 
 module.exports = router;
