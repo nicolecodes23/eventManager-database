@@ -5,7 +5,7 @@ const db = new sqlite3.Database('database.db', (err) => {
     if (err) console.error(err);
     else db.run('PRAGMA foreign_keys = ON');
 });
-
+  
 // GET method gets organiser home page
 router.get('/', async (req, res) => {
     try {
