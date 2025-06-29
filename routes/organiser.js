@@ -100,9 +100,6 @@ router.get('/', async (req, res) => {
             image: images[index % images.length]
         }));
 
-        console.log("totalEvents:", totalEvents);
-
-
         res.render('organiser-home', {
             siteInfo,
             totalEvents: totalEvents.count,
