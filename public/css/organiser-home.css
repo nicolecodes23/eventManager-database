@@ -115,7 +115,7 @@ main {
 
 .create-btn button {
     background-color: var(--bright-blue);
-    border: none;
+    border: 2px solid transparent;
     padding: 0.5rem 1rem;
     margin-right: 1rem;
     border-radius: 8px;
@@ -236,7 +236,6 @@ main {
 
 .event-buttons button {
     background-color: var(---light-purple);
-    border: none;
     padding: 0.5rem 1rem;
     border-radius: 8px;
     cursor: pointer;
@@ -398,4 +397,3 @@ main {
     color: var(--bright-blue);
     border: 2px solid var(--bright-blue);
 }
-
