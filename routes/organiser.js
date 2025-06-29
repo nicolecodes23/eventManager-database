@@ -19,10 +19,20 @@ router.get('/', async (req, res) => {
             );
         });
 
+        // Helper
+        function dbGet(sql, params = []) {
+            return new Promise((resolve, reject) => {
+                db.get(sql, params, (err, row) => {
+                    if (err) reject(err);
+                    else resolve(row);
+                });
+            });
+        }
 
-        const totalEvents = await db.get('SELECT COUNT(*) AS count FROM Event');
-        const draftEvents = await db.get("SELECT COUNT(*) AS count FROM Event WHERE event_status = 'draft'");
-        const publishedEvents = await db.get("SELECT COUNT(*) AS count FROM Event WHERE event_status = 'published'");
+        const totalEvents = await dbGet('SELECT COUNT(*) AS count FROM Event');
+        const draftEvents = await dbGet("SELECT COUNT(*) AS count FROM Event WHERE event_status = 'draft'");
+        const publishedEvents = await dbGet("SELECT COUNT(*) AS count FROM Event WHERE event_status = 'published'");
+
         const published = await new Promise((resolve, reject) => {
             db.all(
                 `
@@ -84,11 +94,13 @@ router.get('/', async (req, res) => {
         if (currentEvent) drafts.push(currentEvent);
 
         //Produce random images everytime user creates event
-        const images = ['event-pose.png', 'event-mat.png', 'event-sun.png','event-pose2.png','event-ball.png'];
+        const images = ['event-pose.png', 'event-mat.png', 'event-sun.png', 'event-pose2.png', 'event-ball.png'];
         const draftsWithImages = drafts.map((event, index) => ({
             ...event,
             image: images[index % images.length]
         }));
+
+        console.log("totalEvents:", totalEvents);
 
 
         res.render('organiser-home', {

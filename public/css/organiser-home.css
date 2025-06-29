@@ -236,6 +236,7 @@ main {
 
 .event-buttons button {
     background-color: var(---light-purple);
+    border: none;
     padding: 0.5rem 1rem;
     border-radius: 8px;
     cursor: pointer;
