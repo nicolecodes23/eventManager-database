@@ -5,7 +5,7 @@ const db = new sqlite3.Database('database.db', (err) => {
     if (err) console.error(err);
     else db.run('PRAGMA foreign_keys = ON');
 });
-  
+
 // GET method gets organiser home page
 router.get('/', async (req, res) => {
     try {
@@ -84,7 +84,7 @@ router.get('/', async (req, res) => {
         if (currentEvent) drafts.push(currentEvent);
 
         //Produce random images everytime user creates event
-        const images = ['event-pose.png', 'event-mat.png', 'eventpose2.png'];
+        const images = ['event-pose.png', 'event-mat.png', 'event-sun.png','event-pose2.png','event-ball.png'];
         const draftsWithImages = drafts.map((event, index) => ({
             ...event,
             image: images[index % images.length]

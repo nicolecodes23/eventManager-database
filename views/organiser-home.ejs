@@ -65,40 +65,47 @@
                                     <div class="event-card">
                                         <img src="/assets/<%= event.image %>" alt="Event image of Yoga Pose"
                                             class="event-image">
-                                        <h4>
-                                            <%= event.event_title %>
-                                        </h4>
-                                        <p>Date: <%= event.event_datetime %>
-                                        </p>
-                                        <p>Created: <%= event.created_at %>
-                                        </p>
-
-                                        <div class="ticket-info">
-                                            <% if (event.tickets.length===0) { %>
-                                                <p>No tickets added yet.</p>
-                                                <% } else { %>
-                                                    <% event.tickets.forEach(ticket=> { %>
-                                                        <div class="ticket-badge">
-                                                            <span>
-                                                                <%= ticket.type %>
-                                                            </span>
-                                                            <span>
-                                                                <%= ticket.quantity %> available
-                                                            </span>
-                                                            <span>$<%= ticket.price %></span>
-                                                        </div>
-                                                        <% }) %>
-                                                            <% } %>
+                                        <div class="event-details">
+                                            <h4>
+                                                <%= event.event_title %>
+                                            </h4>
+                                            <p><span>Date: </span>
+                                                <%= event.event_datetime %>
+                                            </p>
+                                            <p><span>Created: </span>
+                                                <%= event.created_at %>
+                                            </p>
+                                            <div class="ticket-info">
+                                                <p><span>Ticket Price: </span></p>
+                                                <% if (event.tickets.length===0) { %>
+                                                    <p>No tickets added yet.</p>
+                                                    <% } else { %>
+                                                        <% event.tickets.forEach(ticket=> { %>
+                                                            <div class="ticket-badge">
+                                                                <span>
+                                                                    <%= ticket.type %>
+                                                                </span>
+                                                                <span>$<%= ticket.price %> ⇨</span>
+                                                                <span>
+                                                                    <%= ticket.quantity %> available
+                                                                </span>
+                                                            </div>
+                                                            <% }) %>
+                                                                <% } %>
+                                            </div>
                                         </div>
-
-                                        <a href="/organiser/events/edit/<%= event.event_ID %>">Edit</a>
-                                        <form action="/organiser/publish/<%= event.event_ID %>" method="POST">
-                                            <button type="submit">Publish</button>
-                                        </form>
-                                        <form action="/organiser/delete/<%= event.event_ID %>" method="POST"
-                                            onsubmit="return confirm('Delete this draft?')">
-                                            <button type="submit">Delete</button>
-                                        </form>
+                                        <div class="event-buttons">
+                                            <a href="/organiser/events/edit/<%= event.event_ID %>">
+                                                <button type="submit">Edit</button>
+                                            </a>
+                                            <form action="/organiser/publish/<%= event.event_ID %>" method="POST">
+                                                <button type="submit">Publish</button>
+                                            </form>
+                                            <form action="/organiser/delete/<%= event.event_ID %>" method="POST"
+                                                onsubmit="return confirm('Delete this draft?')">
+                                                <button type="submit">Delete</button>
+                                            </form>
+                                        </div>
                                     </div>
                                     <% }) %>
                                         <% } %>
