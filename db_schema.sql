@@ -19,7 +19,8 @@ CREATE TABLE Event (
     event_status VARCHAR(20) NOT NULL CHECK (event_status IN ('draft','published')),
     created_at DATETIME NOT NULL,
     modified_at DATETIME,
-    published_at DATETIME
+    published_at DATETIME,
+    image_filename TEXT
 );
 
 CREATE TABLE TicketType ( 
@@ -57,14 +58,16 @@ VALUES (1, 'The Mat Collective', 'Not your ordinary mats. A place to be calm, cu
 -- Insert a draft event
 INSERT INTO Event (
     event_ID, event_title, event_description, event_datetime,
-    event_status, created_at
+    event_status, created_at,published_at,image_filename
 ) VALUES (
     1, 
     'Beginner Yoga Workshop', 
     'A relaxing yoga session for beginners.', 
     '2025-08-01 10:00:00', 
     'draft', 
-    '2025-07-01 09:00:00'
+    '2025-07-01 09:00:00',
+    NULL,
+    'event-pose.png'
 );
 
 -- Insert a published event

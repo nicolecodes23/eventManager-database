@@ -55,6 +55,7 @@ router.get('/', async (req, res) => {
         const draftRows = await new Promise((resolve, reject) => {
             db.all(`
                 SELECT e.event_ID, e.event_title, e.event_datetime, e.created_at, e.published_at,
+                        e.image_filename,
                        tt.ticket_type, tt.price, tt.quantity_available
                 FROM Event e
                 LEFT JOIN TicketType tt ON e.event_ID = tt.event_ID
@@ -80,6 +81,7 @@ router.get('/', async (req, res) => {
                     event_datetime: row.event_datetime,
                     created_at: row.created_at,
                     published_at: row.published_at,
+                    image:row.image_filename,
                     tickets: []
                 };
             }
@@ -93,19 +95,19 @@ router.get('/', async (req, res) => {
         }
         if (currentEvent) drafts.push(currentEvent);
 
-        //Produce random images everytime user creates event
-        const images = ['event-pose.png', 'event-mat.png', 'event-sun.png', 'event-pose2.png', 'event-ball.png'];
-        const draftsWithImages = drafts.map((event, index) => ({
-            ...event,
-            image: images[index % images.length]
-        }));
+        // //Produce random images everytime user creates event
+        // const images = ['event-pose.png', 'event-mat.png', 'event-sun.png', 'event-pose2.png', 'event-ball.png'];
+        // const draftsWithImages = drafts.map((event, index) => ({
+        //     ...event,
+        //     image: images[index % images.length]
+        // }));
 
         res.render('organiser-home', {
             siteInfo,
             totalEvents: totalEvents.count,
             draftCount: draftEvents.count,
             publishedCount: publishedEvents.count,
-            drafts: draftsWithImages,
+            drafts,
             published
         });
 
@@ -291,22 +293,32 @@ router.post('/events/edit/:id', (req, res) => {
 // Route: POST /organiser/create
 // Purpose: Create a new draft event and redirect to edit page
 router.post('/create', (req, res) => {
+    const images = [
+        'event-pose.png',
+        'event-mat.png',
+        'event-sun.png',
+        'event-pose2.png',
+        'event-ball.png'
+    ];
+
+    // Pick a random image
+    const randomImage = images[Math.floor(Math.random() * images.length)];
+
     const sqlEvent = `
-        INSERT INTO Event (event_title, event_description, event_datetime, created_at, event_status)
-        VALUES (?, ?, ?, datetime('now','localtime'), 'draft')
+        INSERT INTO Event (event_title, event_description, event_datetime, created_at, event_status, image_filename)
+        VALUES (?, ?, ?, datetime('now','localtime'), 'draft', ?)
     `;
     const defaultTitle = 'Untitled Event';
     const defaultDescription = '';
     const defaultDate = new Date().toISOString().split('T')[0];
 
-    db.run(sqlEvent, [defaultTitle, defaultDescription, defaultDate], function (err) {
+    db.run(sqlEvent, [defaultTitle, defaultDescription, defaultDate, randomImage], function (err) {
         if (err) {
             console.error(err);
             return res.status(500).send("Failed to create event.");
         }
         const eventID = this.lastID;
 
-        // Create the two ticket types
         const sqlTicket = `
             INSERT INTO TicketType (event_ID, ticket_type, price, quantity_available)
             VALUES (?, ?, ?, ?)
@@ -323,12 +335,12 @@ router.post('/create', (req, res) => {
                     return res.status(500).send("Failed to create concession ticket.");
                 }
 
-                // All done—redirect to edit page
                 res.redirect(`/organiser/events/edit/${eventID}`);
             });
         });
     });
 });
+
 
 
 // Route: POST /organiser/publish/:id

@@ -3,6 +3,7 @@
     --light-grey: #F2F2F2;
     --white: #FFFFFF;
     --black: #020202;
+    --light-blue: #F5F6FF;
     --sand: #EEE5DC;
 }
 
@@ -214,7 +215,7 @@ h3 {
 
 .choice-card:hover {
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.07);
-    background-color: var(--sand);
+    background-color: var(--light-blue);
 }
 
 .choice-card img {
