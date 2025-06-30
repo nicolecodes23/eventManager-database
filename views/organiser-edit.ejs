@@ -4,11 +4,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/organiser-edit.css">
     <title>Organiser Edit Event Page</title>
 </head>
 
 <body>
-    <h1>This is the organiser edit event page</h1>
+    <div class="container">
+        <main class="main-content">
+            <header class="topbar">
+                <h1>Organiser Edit Event Page</h1>
+                <a href="/organiser">
+                    <button class="return-org-home-btn">
+                        Return to Organiser Home
+                    </button>
+                </a>
+                <section class="avatar">
+                    <img src="/assets/Organiser.png" alt="Men in suit">
+                </section>
+            </header>
+
+            <div class="edit-content">
+                <form action="/organiser/events/edit/<%= event.event_ID %>" method="POST" class="edit-event-form">
+                    
+                    <div class="form-section">
+                        <label for="event_title">Event title</label>
+                        <input type="text" id="event_title" name="event_title" value="<%= event.event_title %>"
+                            required>
+                    </div>
+
+                    <div class="form-section date-time">
+                        <div>
+                            <label for="event_date">Date</label>
+                            <input type="date" id="event_date" name="event_date"
+                                value="<%= event.event_datetime.slice(0,10) %>" required>
+                        </div>
+                        <div>
+                            <label for="event_time">Time</label>
+                            <input type="time" id="event_time" name="event_time"
+                                value="<%= event.event_datetime.slice(11,16) %>" required>
+                        </div>
+                    </div>
+
+                    <div class="form-section ticket-group">
+                        <div>
+                            <label for="full_quantity">Ticket available full price</label>
+                            <input type="number" id="full_quantity" name="full_quantity"
+                                value="<%= fullTicket.quantity_available %>" min="0" required>
+                        </div>
+                        <div>
+                            <label for="full_price">Price of full price ticket</label>
+                            <input type="number" id="full_price" name="full_price" step="0.01"
+                                value="<%= fullTicket.price %>" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-section ticket-group">
+                        <div>
+                            <label for="concession_quantity">Ticket available concession price</label>
+                            <input type="number" id="concession_quantity" name="concession_quantity"
+                                value="<%= concessionTicket.quantity_available %>" min="0" required>
+                        </div>
+                        <div>
+                            <label for="concession_price">Price of concession price ticket</label>
+                            <input type="number" id="concession_price" name="concession_price" step="0.01"
+                                value="<%= concessionTicket.price %>" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <label for="event_description">Event description</label>
+                        <textarea id="event_description" name="event_description" rows="4"
+                            required><%= event.event_description %></textarea>
+                    </div>
+
+                    <div class="form-section">
+                        <p>Created at: <%= event.created_at %>
+                        </p>
+                    </div>
+
+                    <button type="submit" class="submit-button">Submit</button>
+                </form>
+            </div>
+        </main>
+    </div>
 </body>
 
 </html>

@@ -153,30 +153,183 @@ router.post('/settings', (req, res) => {
 
 
 // GET method gets organiser edit page 
-router.get('/events/edit/:id', (req, res) => {
-    res.render('organiser-edit'); //organiser-edit.ejs
+router.get('/events/edit/:id', async (req, res) => {
+    const eventID = req.params.id;
+
+    try {
+        const event = await new Promise((resolve, reject) => {
+            db.get(
+                `SELECT * FROM Event WHERE event_ID = ?`,
+                [eventID],
+                (err, row) => {
+                    if (err) reject(err);
+                    else if (!row) reject(new Error("Event not found"));
+                    else resolve(row);
+                }
+            );
+        });
+
+        const tickets = await new Promise((resolve, reject) => {
+            db.all(
+                `SELECT * FROM TicketType WHERE event_ID = ?`,
+                [eventID],
+                (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows);
+                }
+            );
+        });
+
+        const fullTicket = tickets.find(t => t.ticket_type === 'full') || {
+            quantity_available: 0,
+            price: 0
+        };
+
+        const concessionTicket = tickets.find(t => t.ticket_type === 'concession') || {
+            quantity_available: 0,
+            price: 0
+        };
+
+        res.render('organiser-edit', {
+            event,
+            fullTicket,
+            concessionTicket
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error loading event data.");
+    }
+});
+
+//POST route for edit form
+router.post('/events/edit/:id', (req, res) => {
+    const eventID = req.params.id;
+
+    const {
+        event_title,
+        event_description,
+        event_date,
+        event_time,
+        full_quantity,
+        full_price,
+        concession_quantity,
+        concession_price
+    } = req.body;
+
+    // Basic validation
+    if (
+        !event_title ||
+        !event_description ||
+        !event_date ||
+        !event_time ||
+        full_quantity === undefined ||
+        full_price === undefined ||
+        concession_quantity === undefined ||
+        concession_price === undefined
+    ) {
+        return res.status(400).send("All fields are required.");
+    }
+
+    // Combine date and time
+    const event_datetime = `${event_date} ${event_time}`;
+
+    // Start transaction
+    db.serialize(() => {
+        // Update Event
+        const updateEventSql = `
+            UPDATE Event
+            SET event_title = ?,
+                event_description = ?,
+                event_datetime = ?,
+                modified_at = datetime('now','localtime')
+            WHERE event_ID = ?
+        `;
+
+        db.run(updateEventSql, [event_title, event_description, event_datetime, eventID], function (err) {
+            if (err) {
+                console.error(err);
+                return res.status(500).send("Failed to update event.");
+            }
+
+            // Update Full Ticket
+            const updateFullTicketSql = `
+                UPDATE TicketType
+                SET quantity_available = ?,
+                    price = ?
+                WHERE event_ID = ? AND ticket_type = 'full'
+            `;
+
+            db.run(updateFullTicketSql, [full_quantity, full_price, eventID], function (err) {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).send("Failed to update full ticket.");
+                }
+
+                // Update Concession Ticket
+                const updateConcessionTicketSql = `
+                    UPDATE TicketType
+                    SET quantity_available = ?,
+                        price = ?
+                    WHERE event_ID = ? AND ticket_type = 'concession'
+                `;
+
+                db.run(updateConcessionTicketSql, [concession_quantity, concession_price, eventID], function (err) {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).send("Failed to update concession ticket.");
+                    }
+
+                    // All updates done
+                    res.redirect('/organiser');
+                });
+            });
+        });
+    });
 });
 
 // Route: POST /organiser/create
 // Purpose: Create a new draft event and redirect to edit page
 router.post('/create', (req, res) => {
-    const sql = `
+    const sqlEvent = `
         INSERT INTO Event (event_title, event_description, event_datetime, created_at, event_status)
-        VALUES (?, ?, ?, datetime('now'), 'draft')
+        VALUES (?, ?, ?, datetime('now','localtime'), 'draft')
     `;
     const defaultTitle = 'Untitled Event';
     const defaultDescription = '';
-    const defaultDate = new Date().toISOString().split('T')[0]; // today's date (YYYY-MM-DD)
+    const defaultDate = new Date().toISOString().split('T')[0];
 
-    db.run(sql, [defaultTitle, defaultDescription, defaultDate], function (err) {
+    db.run(sqlEvent, [defaultTitle, defaultDescription, defaultDate], function (err) {
         if (err) {
             console.error(err);
             return res.status(500).send("Failed to create event.");
         }
-        // this.lastID contains the new event_ID
-        res.redirect(`/organiser/events/edit/${this.lastID}`);
+        const eventID = this.lastID;
+
+        // Create the two ticket types
+        const sqlTicket = `
+            INSERT INTO TicketType (event_ID, ticket_type, price, quantity_available)
+            VALUES (?, ?, ?, ?)
+        `;
+
+        db.run(sqlTicket, [eventID, 'full', 0, 0], function (err) {
+            if (err) {
+                console.error(err);
+                return res.status(500).send("Failed to create full ticket.");
+            }
+            db.run(sqlTicket, [eventID, 'concession', 0, 0], function (err) {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).send("Failed to create concession ticket.");
+                }
+
+                // All done—redirect to edit page
+                res.redirect(`/organiser/events/edit/${eventID}`);
+            });
+        });
     });
 });
+
 
 // Route: POST /organiser/publish/:id
 // Purpose: Publish an event by updating its status and publication date
@@ -186,7 +339,7 @@ router.post('/publish/:id', (req, res) => {
     const sql = `
         UPDATE Event
         SET event_status = 'published',
-            published_at = datetime('now')
+            published_at = datetime('now','localtime')
         WHERE event_ID = ?
     `;
 
