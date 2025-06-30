@@ -109,8 +109,9 @@ main {
 /* Labels */
 .form-section label {
     font-weight: 500;
-    color: var(--black);
-    font-size: 0.95rem;
+    color: var(--dark-grey);
+    font-size: 1.1rem;
+    margin: 0.3rem;
 }
 
 /* Inputs and Textareas */
@@ -119,10 +120,10 @@ main {
 .form-section input[type="time"],
 .form-section input[type="number"],
 .form-section textarea {
-    background-color: var(--light-grey);
-    border: 1px solid #ddd;
+    background-color: var(--light-blue);
     padding: 0.75rem 1rem;
     border-radius: 12px;
+    border: 2px solid transparent;
     font-size: 1rem;
     transition: border-color 0.2s, background-color 0.2s;
 }
@@ -133,8 +134,7 @@ main {
 .form-section input[type="number"]:focus,
 .form-section textarea:focus {
     outline: none;
-    border-color: var(--bright-blue);
-    background-color: var(--white);
+    border: 2px solid var(--bright-blue);
 }
 
 /* Date-Time Group Styling */
@@ -174,4 +174,15 @@ main {
     background-color: var(--white);
     color: var(--bright-blue);
     border: 2px solid var(--bright-blue);
+}
+
+.form-section {
+    padding: 0.9rem 0;
+    border-bottom: 2px solid var(--light-grey);
+}
+
+#created-time,
+#event-description {
+    border: none;
+    padding: 0;
 }
