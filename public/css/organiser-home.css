@@ -59,7 +59,7 @@ main {
     flex-grow: 1;
 }
 
-.return-site-btn {
+.return-home-btn {
     background-color: var(--bright-blue);
     border: none;
     padding: 0.5rem 1rem;
@@ -70,7 +70,7 @@ main {
     color: var(--white);
 }
 
-.return-site-btn:hover {
+.return-home-btn:hover {
     background-color: var(--white);
     color: var(--bright-blue);
     border: 2px solid var(--bright-blue);
