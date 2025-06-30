@@ -9,23 +9,22 @@
 </head>
 
 <body>
+    <header class="topbar">
+        <h1>Organiser Edit Event Page</h1>
+        <a href="/organiser">
+            <button class="return-org-home-btn">
+                Return to Organiser Home
+            </button>
+        </a>
+        <section class="avatar">
+            <img src="/assets/Organiser.png" alt="Men in suit">
+        </section>
+    </header>
     <div class="container">
         <main class="main-content">
-            <header class="topbar">
-                <h1>Organiser Edit Event Page</h1>
-                <a href="/organiser">
-                    <button class="return-org-home-btn">
-                        Return to Organiser Home
-                    </button>
-                </a>
-                <section class="avatar">
-                    <img src="/assets/Organiser.png" alt="Men in suit">
-                </section>
-            </header>
-
             <div class="edit-content">
                 <form action="/organiser/events/edit/<%= event.event_ID %>" method="POST" class="edit-event-form">
-                    
+
                     <div class="form-section">
                         <label for="event_title">Event title</label>
                         <input type="text" id="event_title" name="event_title" value="<%= event.event_title %>"
