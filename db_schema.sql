@@ -73,7 +73,7 @@ INSERT INTO Event (
 -- Insert a published event
 INSERT INTO Event (
     event_ID, event_title, event_description, event_datetime,
-    event_status, created_at, published_at
+    event_status, created_at, published_at,image_filename
 ) VALUES (
     2,
     'Sunrise Yoga',
@@ -81,7 +81,8 @@ INSERT INTO Event (
     '2025-08-05 06:30:00',
     'published',
     '2025-07-02 09:00:00',
-    '2025-07-10 12:00:00'
+    '2025-07-10 12:00:00',
+    'event-mat.png'
 );
 
 -- Insert ticket types for draft event

@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
 
             // Query all published events ordered by event_date
             db.all(
-                "SELECT event_ID, event_title, event_datetime FROM Event WHERE event_status = 'published' ORDER BY event_datetime ASC",
+                "SELECT event_ID, event_title, event_datetime, event_description, image_filename FROM Event WHERE event_status = 'published' ORDER BY event_datetime ASC",
                 (err, events) => {
                     if (err) {
                         console.error(err);
