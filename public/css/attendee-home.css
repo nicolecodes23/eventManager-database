@@ -115,8 +115,10 @@ main {
 }
 
 .screen-text {
+    width: fit-content;
     max-width: 350px;
-    min-height: 150px;
+    max-height: 170px;
+    overflow: scroll;
     position: absolute;
     padding: 1rem;
     top: 15%;
@@ -138,25 +140,32 @@ main {
 /* Cards container styled as horizontal scroll */
 .cards-wrapper {
     width: 100%;
-    /* overflow: hidden; */
+    height: 550px;
     margin-top: 1rem;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: absolute;
     top: 38%;
     left: 50%;
     transform: translateX(-50%);
     align-items: center;
+    overflow-x: scroll;
+    overflow-y: visible;
+
 }
 
 .cards-container {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
     align-items: center;
     gap: 1rem;
     overflow-x: auto;
     padding: 1rem;
     scroll-behavior: smooth;
+
+
 }
 
 .cards-container::-webkit-scrollbar {
@@ -171,6 +180,8 @@ main {
     padding: 4rem 2rem 0;
     background-color: var(--light-grey);
     overflow-y: hidden;
+    cursor: pointer;
+
 }
 
 .event-image {
@@ -236,11 +247,11 @@ main {
 }
 
 .event-card:hover .event-image {
-    transform: translate(0.5rem, -9.5rem) rotate(-10deg);
+    transform: translate(0.5rem, -7rem) rotate(-10deg);
 }
 
 .event-card:hover .card-data {
-    transform: translateY(6.8rem);
+    transform: translateY(8.8rem);
     height: fit-content;
 }
 
