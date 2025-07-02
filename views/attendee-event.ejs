@@ -3,13 +3,98 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= event.event_title %> - Bookings
+    </title>
     <link rel="stylesheet" href="/css/attendee-event.css">
-    <title>Attendee Event Page</title>
 </head>
 
 <body>
-    <h1>This is the attendee event page</h1>
+    <div class="container">
+        <main class="main-content">
+            <header class="topbar">
+                <h1>Attendee Event Page</h1>
+                <a href="/attendee">
+                    <button class="return-att-home-btn">
+                        Return to Attendee Home
+                    </button>
+                </a>
+                <section class="avatar">
+                    <img src="/assets/Attendee.png" alt="Women in yoga headband">
+                </section>
+            </header>
+            <div class="content">
+                <section class="event-details">
+                    <h2>
+                        <%= event.event_title %>
+                    </h2>
+                    <p>
+                        <%= event.event_description %>
+                    </p>
+
+                    <% if (event.image_filename) { %>
+                        <div class="event-image">
+                            <img src="/assets/<%= event.image_filename %>" alt="<%= event.event_title %>">
+                        </div>
+                        <% } %>
+
+                            <p><strong>Date:</strong>
+                                <%= event.event_datetime %>
+                            </p>
+                </section>
+
+                <section class="booking-form-container">
+                    <form action="/attendee/event/<%= event.event_ID %>/book" method="POST" class="booking-form">
+                        <div class="form-group">
+                            <label for="attendee_name">Attendee Name: </label>
+                            <input type="text" id="attendee_name" name="attendee_name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Event</label>
+                            <input type="text" id="event_title" value="<%= event.event_title %>" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="text" id="event_date" value="<%= event.event_datetime %>" readonly>
+                        </div>
+
+                        <fieldset class="ticket-selection">
+                            <legend>Book Your Session</legend>
+
+                            <div class="ticket-option">
+                                <label for="full_quantity">Full Ticket</label>
+                                <div class="ticket-controls">
+                                    <input type="number" id="full_quantity" name="full_quantity" value="0" min="0"
+                                        max="<%= ticketAvailability.full %>">
+                                    <span class="ticket-price">$<%= ticketPrices.full.toFixed(2) %></span>
+                                    <span class="ticket-available">
+                                        <%= ticketAvailability.full %> tickets left
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="ticket-option">
+                                <label for="concession_quantity">Concession Ticket</label>
+                                <div class="ticket-controls">
+                                    <input type="number" id="concession_quantity" name="concession_quantity" value="0"
+                                        min="0" max="<%= ticketAvailability.concession %>">
+                                    <span class="ticket-price">$<%= ticketPrices.concession.toFixed(2) %></span>
+                                    <span class="ticket-available">
+                                        <%= ticketAvailability.concession %> tickets left
+                                    </span>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <button type="submit" class="btn-book">Book Now</button>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </div>
+<script src="/js/attendee-event.js"></script>
 </body>
 
 </html>

@@ -19,7 +19,7 @@
                     </button>
                 </a>
                 <section class="avatar">
-                    <img src="/assets/Organiser.png" alt="Men in suit">
+                    <img src="/assets/Attendee.png" alt="Women in headband">
                 </section>
             </header>
             <div class="home-content">
@@ -63,11 +63,11 @@
                                 <% }) %>
                         </div>
                         <% } %>
-                    <div class="scroll-indicator">
-                        <% events.forEach((event, index)=> { %>
-                            <span class="dot<%= index === 0 ? ' active' : '' %>"></span>
-                            <% }) %>
-                    </div>
+                            <div class="scroll-indicator">
+                                <% events.forEach((event, index)=> { %>
+                                    <span class="dot<%= index === 0 ? ' active' : '' %>"></span>
+                                    <% }) %>
+                            </div>
             </div>
         </main>
     </div>

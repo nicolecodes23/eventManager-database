@@ -58,7 +58,7 @@ router.get('/event/:id', (req, res) => {
         `SELECT event_ID, event_title, event_description, event_datetime, image_filename
         FROM Event
         WHERE event_ID = ? AND event_status = 'published'`,
-         [eventId],
+        [eventId],
         (err, eventRow) => {
             if (err) {
                 console.error(err);
@@ -130,7 +130,7 @@ router.post('/event/:id/book', (req, res) => {
 
     // 1. Check available tickets
     db.all(
-        `SELECT ticket_type, quantity_available FROM TicketType WHERE event_ID = ?`,
+        `SELECT ticket_ID, ticket_type, quantity_available FROM TicketType WHERE event_ID = ?`,
         [eventId],
         (err, ticketRows) => {
             if (err) {
@@ -140,13 +140,17 @@ router.post('/event/:id/book', (req, res) => {
 
             let availableFull = 0;
             let availableConcession = 0;
+            let ticketIdFull = null;
+            let ticketIdConcession = null;
 
             ticketRows.forEach(ticket => {
                 if (ticket.ticket_type === 'full') {
                     availableFull = ticket.quantity_available;
+                    ticketIdFull = ticket.ticket_ID;
                 }
                 if (ticket.ticket_type === 'concession') {
                     availableConcession = ticket.quantity_available;
+                    ticketIdConcession = ticket.ticket_ID;
                 }
             });
 
@@ -157,7 +161,7 @@ router.post('/event/:id/book', (req, res) => {
 
             // 2. Insert booking
             db.run(
-                `INSERT INTO Booking (attendee_name, event_ID, booking_date) VALUES (?, ?, datetime('now'))`,
+                `INSERT INTO Booking (attendee_name, event_ID, booked_date) VALUES (?, ?, datetime('now'))`,
                 [attendee_name, eventId],
                 function (err) {
                     if (err) {
@@ -169,11 +173,11 @@ router.post('/event/:id/book', (req, res) => {
 
                     // 3. Insert booking items
                     const insertBookingItem = db.prepare(
-                        `INSERT INTO BookingItem (booking_ID, ticket_type, quantity) VALUES (?, ?, ?)`
+                        `INSERT INTO BookingItem (booking_ID, ticket_ID, quantity) VALUES (?, ?, ?)`
                     );
 
-                    if (fullQty > 0) insertBookingItem.run(bookingId, 'full', fullQty);
-                    if (concessionQty > 0) insertBookingItem.run(bookingId, 'concession', concessionQty);
+                    if (fullQty > 0) insertBookingItem.run(bookingId, ticketIdFull, fullQty);
+                    if (concessionQty > 0) insertBookingItem.run(bookingId, ticketIdConcession, concessionQty);
 
                     insertBookingItem.finalize();
 
