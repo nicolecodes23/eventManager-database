@@ -38,43 +38,39 @@
                     <div class="no-events">No upcoming events.</div>
                     <%} else {%>
                         <div class="cards-wrapper">
-                            <div class="cards-container" id="cardsContainer">
-                                <% events.forEach(event=> { %>
-                                    <div class="event-card">
-                                        <img src="/assets/<%= event.image_filename ? event.image_filename : 'event-mat.png' %>"
-                                            alt="Yoga pose" class="event-image">
-                                        <div class="card-data">
-                                            <h3 class="event-title">
-                                                <%= event.event_title %>
-                                            </h3>
-                                            <p class="event-date">
-                                                <%= new Date(event.event_datetime).toLocaleString() %>
-                                            </p>
-                                            <p class="event-description">
-                                                <%= event.event_description ? event.event_description
-                                                    : "Join us for this event." %>
-                                            </p>
-                                            <a href="/attendee/event/<%= event.event_ID %>">
-                                                <button class="learn-more-btn">
-                                                    Learn more >
-                                                </button></a>
-                                        </div>
-
+                            <% events.forEach(event=> { %>
+                                <div class="event-card">
+                                    <img src="/assets/<%= event.image_filename ? event.image_filename : 'event-mat.png' %>"
+                                        alt="Yoga pose" class="event-image">
+                                    <div class="card-data">
+                                        <h3 class="event-title">
+                                            <%= event.event_title %>
+                                        </h3>
+                                        <p class="event-date">
+                                            <%= new Date(event.event_datetime).toLocaleString() %>
+                                        </p>
+                                        <p class="event-description">
+                                            <%= event.event_description ? event.event_description
+                                                : "Join us for this event." %>
+                                        </p>
+                                        <a href="/attendee/event/<%= event.event_ID %>">
+                                            <button class="learn-more-btn">
+                                                Learn more >
+                                            </button></a>
                                     </div>
-                                    <% }) %>
-                            </div>
-                            <div class="scroll-indicator">
-                                <% events.forEach((event, index)=> { %>
-                                    <span class="dot<%= index === 0 ? ' active' : '' %>"></span>
-                                    <% }) %>
-                            </div>
+
+                                </div>
+                                <% }) %>
                         </div>
                         <% } %>
+                    <div class="scroll-indicator">
+                        <% events.forEach((event, index)=> { %>
+                            <span class="dot<%= index === 0 ? ' active' : '' %>"></span>
+                            <% }) %>
+                    </div>
             </div>
         </main>
     </div>
-    <script src="/js/attendee-home.js"></script>
-
 </body>
 
 </html>
