@@ -25,12 +25,13 @@
             </header>
             <div class="content">
                 <section class="event-details">
-                    <h2>
-                        <%= event.event_title %>
-                    </h2>
-                    <p>
+                    <p class="event-desc">
                         <%= event.event_description %>
                     </p>
+                    <h2 class="event-title">
+                        <%= event.event_title %>
+                    </h2>
+
 
                     <% if (event.image_filename) { %>
                         <div class="event-image">
@@ -38,7 +39,7 @@
                         </div>
                         <% } %>
 
-                            <p><strong>Date:</strong>
+                            <p class="event-date"><strong>Date:</strong>
                                 <%= event.event_datetime %>
                             </p>
                 </section>
@@ -94,7 +95,7 @@
             </div>
         </main>
     </div>
-<script src="/js/attendee-event.js"></script>
+    <script src="/js/attendee-event.js"></script>
 </body>
 
 </html>
