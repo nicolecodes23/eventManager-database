@@ -149,7 +149,6 @@ main {
     position: absolute;
     top: 38%;
     left: 0;
-    /* transform: translateX(-50%); */
     overflow-x: auto;
     overflow-y: visible;
     padding-left: 1rem;
@@ -185,7 +184,6 @@ main {
     overflow-y: hidden;
     cursor: pointer;
     margin-right: 2rem;
-
 }
 
 .event-image {
@@ -193,6 +191,8 @@ main {
     width: 260px;
     filter: drop-shadow(5px 10px 15px var(--white));
     margin-bottom: 1rem;
+    margin-left: 2rem;
+    
 }
 
 .card-data {
