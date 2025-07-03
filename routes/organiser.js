@@ -298,7 +298,9 @@ router.post('/create', (req, res) => {
         'event-mat.png',
         'event-sun.png',
         'event-pose2.png',
-        'event-ball.png'
+        'event-ball.png',
+        'event-lily.png',
+        'event-pilates.png'
     ];
 
     // Pick a random image
