@@ -1,156 +1,152 @@
 :root {
-    --dark-grey: #90908F;
-    --light-grey: #F2F2F2;
-    --white: #FFFFFF;
-    --black: #020202;
-    --sand: #EEE5DC;
-    --offwhite: #F5F8FA;
-    --bright-blue: #007BFF;
-    --light-blue: #F5F6FF;
-    ---light-purple: #E6E6F0;
+  --dark-grey: #90908F;
+  --light-grey: #F2F2F2;
+  --white: #FFFFFF;
+  --black: #020202;
+  --sand: #EEE5DC;
+  --offwhite: #F5F8FA;
+  --bright-blue: #007BFF;
+  --light-blue: #F5F6FF;
+  ---light-purple: #E6E6F0;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: content-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: content-box;
 }
 
 body {
-    background-color: var(--light-grey);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+  background-color: var(--light-grey);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
 .container {
-    background-color: var(--offwhite);
-    width: 100%;
-    max-width: 1430px;
-    border-radius: 20px;
-    overflow: hidden;
-    height: 100%;
-    margin: 1rem 0;
-    padding: 0.5rem;
+  background-color: var(--offwhite);
+  width: 100%;
+  max-width: 1430px;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 100%;
+  margin: 1rem 0;
+  padding: 0.5rem;
 }
 
 main {
-    display: grid;
-    grid-template-rows: auto 1fr;
-    margin: 1rem;
-    border-radius: 20px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  margin: 1rem;
+  border-radius: 20px;
 }
 
 .topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background-color: var(--white);
-    border-radius: 20px;
-    margin: 0.2rem;
-    margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--white);
+  border-radius: 20px;
+  margin: 0.2rem;
+  margin-bottom: 1rem;
 }
 
 .topbar h1 {
-    margin: 0;
-    font-size: 2.1rem;
-    flex-grow: 1;
+  margin: 0;
+  font-size: 2.1rem;
+  flex-grow: 1;
 }
 
 .return-att-home-btn {
-    background-color: var(--bright-blue);
-    border: none;
-    padding: 0.5rem 1rem;
-    margin-right: 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    color: var(--white);
+  background-color: var(--bright-blue);
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-right: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--white);
 }
 
 .return-att-home-btn:hover {
-    background-color: var(--white);
-    color: var(--bright-blue);
-    border: 2px solid var(--bright-blue);
+  background-color: var(--white);
+  color: var(--bright-blue);
+  border: 2px solid var(--bright-blue);
 }
 
 .avatar {
-    background-color: var(--sand);
-    border-radius: 50%;
+  background-color: var(--sand);
+  border-radius: 50%;
 }
 
 .avatar img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: contain;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: contain;
 }
 
 .content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 1rem;
-    background-color: var(--light-grey);
-    border-radius: 20px;
-    min-height: 70vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 1rem;
+  background-color: var(--light-grey);
+  border-radius: 20px;
+  min-height: 70vh;
 }
 
-section {
-    border: solid;
-}
 
 .event-details {
-    color: var(--dark-grey);
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    word-wrap: break-word;
-    text-align: left;
-    border: solid;
+  color: var(--dark-grey);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  word-wrap: break-word;
+  text-align: left;
 }
 
 .event-desc {
-    padding: 0.1rem;
-    font-size: 1.1rem;
-    font-weight: 500;
-    max-width: 35vw;
+  padding: 0.1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  max-width: 35vw;
 }
- 
+
 .event-title {
-    color: var(--bright-blue);
-    margin: 0.5rem 0;
-    padding: 0.2rem;
-    font-size: 5rem;
+  color: var(--bright-blue);
+  margin: 0.5rem 0;
+  padding: 0.2rem;
+  font-size: 5rem;
 }
 
 .event-details img {
-    width: 350px;
-    height: 350px;
+  width: 350px;
+  height: 350px;
 }
 
 .event-date {
-    margin-top: auto;
-    font-size: 1.1rem;
-    font-weight: 600;
+  margin-top: auto;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .booking-form-container {
   background-color: var(--white);
   padding: 1.5rem;
-  border-radius: 16px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
 .booking-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 2rem;
+  flex: 1;
 }
 
 /* Form groups styling */
@@ -161,6 +157,7 @@ section {
 
 .booking-form label {
   font-weight: 600;
+  font-size: 1.1rem;
   margin-bottom: 0.25rem;
   color: var(--dark-grey);
 }
@@ -168,16 +165,16 @@ section {
 /* Inputs styling */
 .booking-form input[type="text"],
 .booking-form input[type="number"] {
-  padding: 0.6rem 0.8rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 2px solid transparent;
   font-size: 1rem;
   background-color: var(--offwhite);
 }
 
 /* Ticket selection fieldset */
 .booking-form fieldset {
-  border: 1px solid #ddd;
+  border: 2px dashed #ddd;
   border-radius: 12px;
   padding: 1rem;
 }
@@ -193,6 +190,7 @@ section {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.75rem;
+  padding-right: 0.5rem;
 }
 
 .ticket-controls {
@@ -206,15 +204,38 @@ section {
   background-color: var(--bright-blue);
   color: var(--white);
   border: none;
-  padding: 0.75rem;
+  padding: 0.75rem 1rem;
   font-size: 1.1rem;
+  font-weight: bold;
+  border: 2px solid transparent;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-top: auto;
 }
 
 .btn-book:hover {
   background-color: var(--white);
   color: var(--bright-blue);
   border: 2px solid var(--bright-blue);
+}
+
+@media (max-width: 900px) {
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .event-details {
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .booking-form-container {
+    max-width: 100%;
+  }
 }
