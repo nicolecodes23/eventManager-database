@@ -398,3 +398,50 @@ main {
     color: var(--bright-blue);
     border: 2px solid var(--bright-blue);
 }
+
+@media (max-width: 900px) {
+
+    /* Home content stacks with right-section first */
+    .home-content {
+        display: flex;
+        flex-direction: column-reverse;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .left-section,
+    .right-section {
+        width: 100%;
+        margin: 0;
+    }
+
+    .right-section {
+        margin-top: 1rem;
+        width: 90vw;
+    }
+
+    .left-section,
+    .right-section,
+    .site-info,
+    .draft-events,
+    .published-events {
+        border-radius: 12px;
+    }
+
+    .event-card {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .event-card img {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .event-buttons {
+        flex-direction: column;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+}
