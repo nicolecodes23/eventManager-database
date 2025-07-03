@@ -76,8 +76,10 @@
                             required><%= event.event_description %></textarea>
                     </div>
 
-                    <div class="form-section" id="created-time">
-                        <p>Created at: <%= event.created_at %>
+                    <div class="form-section" class="times">
+                        <p id="created-time">Created at: <%= event.created_at %>
+                        </p>
+                        <p id="modified-time">Last modified at: <%= event.modified_at %>
                         </p>
                     </div>
 
