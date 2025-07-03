@@ -9,8 +9,10 @@
 </head>
 
 <body>
+    <!--main container to center content-->
     <div class="container">
         <main class="main-content">
+            <!--header with page title, return btn and avatar img-->
             <header class="topbar">
                 <h1>Organiser Home Page</h1>
                 <a href="/">
@@ -22,8 +24,11 @@
                     <img src="/assets/Organiser.png" alt="Men in suit">
                 </section>
             </header>
+            <!--main area split into left and right sections-->
             <div class="home-content">
+                <!--left section containing draft events and counts-->
                 <div class="left-section">
+                    <!--count number of event section-->
                     <section class="left-top">
                         <h2>Event Activity</h2>
                         <section class="create-btn">
@@ -52,6 +57,7 @@
                             </div>
                         </section>
                     </section>
+                    <!--list of draft events-->
                     <div class="draft-events">
                         <h3>Draft Events</h3>
 
@@ -108,7 +114,9 @@
                                         <% } %>
                     </div>
                 </div>
+                <!--right section has site info and published events-->
                 <div class="right-section">
+                    <!--site info panel-->
                     <section class="site-info">
                         <h2> Welcome to
                             <%= siteInfo.site_name %>
@@ -123,6 +131,7 @@
                                 </button></a>
                         </section>
                     </section>
+                    <!--list of published events-->
                     <div class="published-events">
                         <h3>Published Events</h3>
 
@@ -152,9 +161,10 @@
                                             <p><span>Tickets:</span>
                                                 <%= event.tickets %>
                                             </p>
-                                    
+
                                             <div class="event-actions">
-                                                <a href="/attendee/event/<%= event.event_ID %>" class="share-link">View as Attendee</a>
+                                                <a href="/attendee/event/<%= event.event_ID %>" class="share-link">View
+                                                    as Attendee</a>
                                                 <form action="/organiser/delete/<%= event.event_ID %>" method="POST"
                                                     onsubmit="return confirm('Delete this event?')">
                                                     <button type="submit">Delete</button>
@@ -162,7 +172,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <% }) %>
                                         <% } %>
                     </div>

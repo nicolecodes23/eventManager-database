@@ -16,6 +16,7 @@
     box-sizing: content-box;
 }
 
+/* Centers all content vertically & horizontally */
 body {
     background-color: var(--light-blue);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -24,6 +25,7 @@ body {
     align-items: center;
     min-height: 100vh;
 }
+
 
 .container {
     background-color: var(--offwhite);
@@ -36,6 +38,7 @@ body {
     padding: 0.5rem;
 }
 
+/* main grid area topbar and content */
 main {
     display: grid;
     grid-template-rows: auto 1fr;
@@ -43,6 +46,7 @@ main {
     border-radius: 20px;
 }
 
+/* hedaer with title, button and avatar */
 .topbar {
     display: flex;
     justify-content: space-between;
@@ -88,6 +92,7 @@ main {
     object-fit: contain;
 }
 
+/* main home content container */
 .home-content {
     position: relative;
     display: flex;
@@ -100,6 +105,7 @@ main {
     margin: 1rem 0.5rem;
 }
 
+/* phone mockup image section */
 .phone {
     position: relative;
     width: fit-content;
@@ -114,6 +120,7 @@ main {
     display: block;
 }
 
+/* site info layered on top of phone image */
 .screen-text {
     width: fit-content;
     max-width: 350px;
@@ -127,14 +134,12 @@ main {
 
 .site-name {
     font-weight: bold;
-    /* color: var(--dark-grey); */
     font-size: 2rem;
     margin-bottom: 0.5rem;
 }
 
 .site-description {
     font-size: 0.9rem;
-    /* color: var(--dark-grey); */
 }
 
 /* Cards container styled as horizontal scroll */
@@ -143,7 +148,6 @@ main {
     height: 520px;
     margin-top: 1rem;
     display: flex;
-    /* flex-direction: column; */
     justify-content: flex-start;
     align-items: flex-end;
     position: absolute;
@@ -154,6 +158,7 @@ main {
     padding-left: 1rem;
 }
 
+/* Hide scrollbar (only for Webkit browsers) */
 .cards-wrapper::-webkit-scrollbar {
     width: 0;
 }
@@ -170,16 +175,18 @@ main {
     margin-right: 2rem;
 }
 
+/* img inside event card */
 .event-image {
     position: absolute;
     width: 260px;
     filter: drop-shadow(5px 10px 15px var(--white));
     margin-bottom: 1rem;
     margin-left: 2rem;
-    
+
 }
 
 .card-data {
+    /* push text below image out of sight */
     transform: translateY(17.2rem);
     text-align: center;
     max-width: 340px;
@@ -202,6 +209,7 @@ main {
 
 }
 
+/* Description hidden by default */
 .event-description {
     font-size: 0.85rem;
     text-align: initial;
@@ -210,6 +218,7 @@ main {
     text-align: center;
 }
 
+/* Learn more button hidden initially */
 .learn-more-btn {
     background-color: var(--bright-blue);
     border: 2px solid transparent;
@@ -230,6 +239,7 @@ main {
     border: 2px solid var(--bright-blue);
 }
 
+/* Animate all these parts smoothly */
 .event-image,
 .card-data,
 .event-title,
@@ -238,6 +248,7 @@ main {
     transition: 0.5s;
 }
 
+/* hover states to slide up card */
 .event-card:hover .event-image {
     transform: translate(0.5rem, -7rem) rotate(-10deg);
 }
@@ -271,8 +282,6 @@ main {
     opacity: 1;
 }
 
-
-
 /* Scroll indicators (dots) */
 .scroll-indicator {
     display: flex;
@@ -292,6 +301,7 @@ main {
     background-color: var(--bright-blue);
 }
 
+/* Text if no events are available */
 .no-events {
     font-style: italic;
     color: #777;

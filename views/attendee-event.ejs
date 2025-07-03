@@ -10,8 +10,10 @@
 </head>
 
 <body>
+    <!--main container to wrap all content-->
     <div class="container">
         <main class="main-content">
+            <!--header section containing title, return btn and avatar-->
             <header class="topbar">
                 <h1>Attendee Event Page</h1>
                 <a href="/attendee">
@@ -23,7 +25,9 @@
                     <img src="/assets/Attendee.png" alt="Women in yoga headband">
                 </section>
             </header>
+            <!--main content area split into event details and booking section-->
             <div class="content">
+                <!-- Section showing event information -->
                 <section class="event-details">
                     <p class="event-desc">
                         <%= event.event_description %>
@@ -44,7 +48,9 @@
                             </p>
                 </section>
 
+                <!-- Section containing the booking form -->
                 <section class="booking-form-container">
+                    <!-- Form to submit booking details -->
                     <form action="/attendee/event/<%= event.event_ID %>/book" method="POST" class="booking-form">
                         <div class="form-group">
                             <label for="attendee_name">Attendee Name: </label>

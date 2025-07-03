@@ -6,15 +6,9 @@ const db = new sqlite3.Database('database.db', (err) => {
     else db.run('PRAGMA foreign_keys = ON');
 });
 
-// GET method to get /attendee home page
-// router.get('/', (req, res) => {
-//     res.render('attendee-home'); //attendee-home.ejs
-// });
-
 /**
  * GET /attendee
  * Purpose: Render the Attendee Home Page showing site info and published events.
- * Inputs: none
  * Outputs: attendee-home.ejs rendered with site data and events data
  */
 router.get('/', (req, res) => {
@@ -47,13 +41,13 @@ router.get('/', (req, res) => {
     );
 });
 
+//=====================================================================
 // GET method to get /attendee/event/:id attendee event page
 // Purpose: Show the event page for a specific event
-
 router.get('/event/:id', (req, res) => {
     const eventId = req.params.id;
 
-    // 1. Query Event
+    // 1. Query Event by ID, must be published 
     db.get(
         `SELECT event_ID, event_title, event_description, event_datetime, image_filename
         FROM Event
@@ -69,7 +63,7 @@ router.get('/event/:id', (req, res) => {
                 return res.status(404).send("Event not found or not published.");
             }
 
-            // 2. Query Ticket Types
+            // 2. Query Ticket Types for this event
             db.all(
                 `SELECT ticket_type, price, quantity_available FROM TicketType WHERE event_ID = ?`,
                 [eventId],
@@ -79,7 +73,7 @@ router.get('/event/:id', (req, res) => {
                         return res.status(500).send("Error fetching tickets.");
                     }
 
-                    // Prepare ticket info for template
+                    // Prepare ticket price and availability for templatating
                     const ticketPrices = {};
                     const ticketAvailability = {};
 
@@ -123,12 +117,12 @@ router.post('/event/:id/book', (req, res) => {
         return res.status(400).send("Name is required.");
     }
 
-    // Validate at least one ticket
+    // Validate at least one ticket was selected 
     if (fullQty === 0 && concessionQty === 0) {
         return res.status(400).send("Please select at least one ticket.");
     }
 
-    // 1. Check available tickets
+    // 1. Check available tickets quantites 
     db.all(
         `SELECT ticket_ID, ticket_type, quantity_available FROM TicketType WHERE event_ID = ?`,
         [eventId],
@@ -143,6 +137,7 @@ router.post('/event/:id/book', (req, res) => {
             let ticketIdFull = null;
             let ticketIdConcession = null;
 
+            //map tickets for easier lookup
             ticketRows.forEach(ticket => {
                 if (ticket.ticket_type === 'full') {
                     availableFull = ticket.quantity_available;
@@ -154,12 +149,12 @@ router.post('/event/:id/book', (req, res) => {
                 }
             });
 
-            // Check if enough tickets
+            // Check if enough tickets left
             if (fullQty > availableFull || concessionQty > availableConcession) {
                 return res.status(400).send("Not enough tickets available.");
             }
 
-            // 2. Insert booking
+            // 2. Insert booking into booking table 
             db.run(
                 `INSERT INTO Booking (attendee_name, event_ID, booked_date) VALUES (?, ?, datetime('now'))`,
                 [attendee_name, eventId],
@@ -169,9 +164,10 @@ router.post('/event/:id/book', (req, res) => {
                         return res.status(500).send("Error creating booking.");
                     }
 
+                    //retrieve booking ID of newly inserted booking
                     const bookingId = this.lastID;
 
-                    // 3. Insert booking items
+                    // 3. Insert booking items for each ticket type
                     const insertBookingItem = db.prepare(
                         `INSERT INTO BookingItem (booking_ID, ticket_ID, quantity) VALUES (?, ?, ?)`
                     );
@@ -181,7 +177,7 @@ router.post('/event/:id/book', (req, res) => {
 
                     insertBookingItem.finalize();
 
-                    // 4. Update ticket quantities
+                    // 4. Update ticket quantities to subtract booked tickets
                     const updateTicket = db.prepare(
                         `UPDATE TicketType SET quantity_available = quantity_available - ? WHERE event_ID = ? AND ticket_type = ?`
                     );

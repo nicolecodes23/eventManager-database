@@ -9,8 +9,10 @@
 </head>
 
 <body>
+    <!-- Main container wrapping all content -->
     <div class="container">
         <main class="main-content">
+            <!-- Header with page title, return button, and avatar image -->
             <header class="topbar">
                 <h1>Attendee Home Page</h1>
                 <a href="/">
@@ -22,7 +24,11 @@
                     <img src="/assets/Attendee.png" alt="Women in headband">
                 </section>
             </header>
+
+            <!-- Main content area for phone mockup and event cards -->
             <div class="home-content">
+
+                <!-- Phone mockup showing the site title and description -->
                 <section class="phone">
                     <img src="/assets/phone-frame.png" alt="Iphone frame">
                     <section class="screen-text">
@@ -34,9 +40,12 @@
                         </p>
                     </section>
                 </section>
+
+                <!-- If there are no events to display -->
                 <% if (events.length===0) { %>
                     <div class="no-events">No upcoming events.</div>
                     <%} else {%>
+                        <!-- If events exist, render them as cards -->
                         <div class="cards-wrapper">
                             <% events.forEach(event=> { %>
                                 <div class="event-card">
@@ -63,8 +72,10 @@
                                 <% }) %>
                         </div>
                         <% } %>
+                            <!-- Scroll indicator dots below the cards -->
                             <div class="scroll-indicator">
                                 <% events.forEach((event, index)=> { %>
+                                    <!-- Mark the first dot as active -->
                                     <span class="dot<%= index === 0 ? ' active' : '' %>"></span>
                                     <% }) %>
                             </div>

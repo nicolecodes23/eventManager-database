@@ -9,12 +9,16 @@
 </head>
 
 <body>
+    <!--Main container with parallax background effect-->
     <div class="parallax">
+        <!--Introduction line above title-->
         <div class="quick-intro">
             <h3>A new yoga studio</h3>
             <h3>Event management website</h3>
         </div>
+        <!--Description section containing three parts: left,center, right-->
         <div class="description">
+            <!--Left vertical slider with images-->
             <section class="left-section">
                 <div class="slider slider-vertical" style="--quantity:20">
                     <div class="item" style="--position: 1">
@@ -79,13 +83,13 @@
                     </div>
                 </div>
             </section>
+            <!--Center section with main heading site description -->
             <section class="center-section">
-                <!-- <p>More than just a mat. The Mat Collective is your destination for yoga experiences that inspire
-                    connection,
-                    creativity
-                    and inner clarity - <span> one event at a time.</span></p> -->
-                <h1>The Mat Collective </h1>
+                <h1>
+                    <%= site.site_name %>
+                </h1>
             </section>
+            <!--Right vertical slider-->
             <section class="right-section">
                 <div class="slider slider-vertical mirrored" style="--quantity:20">
                     <div class="item" style="--position: 1">
@@ -153,15 +157,18 @@
 
         </div>
     </div>
+    <!--bottom section with user role selection-->
     <div class="main-bottom">
         <h2>Who are you?</h2>
         <div class="choice-container">
+            <!--link for organisers-->
             <a class="choice-link" href="/organiser">
                 <div class="choice-card">
                     <img src="/assets/Organiser.png" alt="Men in suit">
                     <h3>I am an organiser</h3>
                 </div>
             </a>
+            <!--link for attendees-->
             <a class="choice-link" href="/attendee">
                 <div class="choice-card">
                     <img src="/assets/Attendee.png" alt="Women in workout gear">

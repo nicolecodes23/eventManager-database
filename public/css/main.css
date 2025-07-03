@@ -1,3 +1,4 @@
+/*color variables*/
 :root {
     --dark-grey: #90908F;
     --light-grey: #F2F2F2;
@@ -7,6 +8,7 @@
     --sand: #EEE5DC;
 }
 
+/* global reset  */
 * {
     margin: 0;
     padding: 0;
@@ -24,6 +26,7 @@ h3 {
     color: var(--dark-grey);
 }
 
+/* parallax container */
 .parallax {
     width: 100%;
     height: 100vh;
@@ -39,6 +42,7 @@ h3 {
     position: relative;
 }
 
+/* intro text at the top */
 .quick-intro {
     width: 80%;
     height: 20%;
@@ -54,6 +58,7 @@ h3 {
     bottom: 0;
 }
 
+/* description section 3 columns */
 .description {
     display: flex;
     justify-content: space-between;
@@ -65,6 +70,7 @@ h3 {
     gap: 2rem;
 }
 
+/* center title */
 .center-section h1 {
     font-size: 12rem;
     padding: 5px;
@@ -81,6 +87,7 @@ h3 {
     flex: 1 1 200px;
 }
 
+/* left slider container */
 .left-section {
     text-align: right;
     position: relative;
@@ -89,12 +96,14 @@ h3 {
     align-items: center;
 }
 
+/* right slider container */
 .right-section {
     display: flex;
     justify-content: flex-end;
     align-items: center;
 }
 
+/* 3d slider base styles */
 .slider-vertical {
     position: relative;
     width: 200px;
@@ -108,6 +117,7 @@ h3 {
     animation: spinVerticalLeft 20s linear infinite;
 }
 
+/* left slider spin animation */
 @keyframes spinVerticalLeft {
     from {
         transform: rotateY(35deg) rotateX(0deg);
@@ -118,6 +128,7 @@ h3 {
     }
 }
 
+/* each item in the slider */
 .slider-vertical .item {
     position: absolute;
     width: 100%;
@@ -126,18 +137,20 @@ h3 {
         rotateX(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(400px);
 }
 
+/* scale image inside item */
 .slider-vertical .item img {
     width: 100%;
     height: auto;
     object-fit: contain;
 }
 
+/* mirrored slider on right side */
 .mirrored {
     transform: perspective(1200px) scaleX(-1);
     animation: spinVerticalMirrored 20s linear infinite;
 }
 
-
+/* right slider spin animation */
 @keyframes spinVerticalRight {
     from {
         transform: rotateY(-35deg) rotateX(0deg);
@@ -154,6 +167,7 @@ h3 {
     margin-right: 2rem;
 }
 
+/* center section h1 alignment  */
 .center-section {
     display: flex;
     justify-content: center;
@@ -161,15 +175,7 @@ h3 {
     text-align: center;
 }
 
-.center-section p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-}
-
-.center-section span {
-    font-style: italic;
-}
-
+/* choice section */
 .main-bottom {
     width: 100%;
     display: flex;
@@ -196,6 +202,7 @@ h3 {
     padding: 2rem;
 }
 
+/* Individual choice cards styling */
 .choice-card {
     display: flex;
     flex-direction: column;
@@ -213,6 +220,7 @@ h3 {
     cursor: pointer;
 }
 
+/* Hover effect on choice card */
 .choice-card:hover {
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.07);
     background-color: var(--light-blue);

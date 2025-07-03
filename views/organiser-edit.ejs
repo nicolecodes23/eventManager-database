@@ -8,7 +8,7 @@
     <title>Organiser Edit Event Page</title>
 </head>
 
-<body>
+<body><!--header with title , return btn and avatar outside of main container-->
     <header class="topbar">
         <h1>Organiser Edit Event Page</h1>
         <a href="/organiser">
@@ -20,9 +20,11 @@
             <img src="/assets/Organiser.png" alt="Men in suit">
         </section>
     </header>
+    <!--container holding main content-->
     <div class="container">
         <main class="main-content">
             <div class="edit-content">
+                <!--form to edit event details-->
                 <form action="/organiser/events/edit/<%= event.event_ID %>" method="POST" class="edit-event-form">
 
                     <div class="form-section title">
@@ -43,7 +45,8 @@
                                 value="<%= event.event_datetime.slice(11,16) %>" required>
                         </div>
                     </div>
-
+                    
+                    <!-- Section for editing ticket quantity and price -->
                     <div class="form-section ticket-group">
                         <div>
                             <label for="full_quantity">Ticket available full price:</label>
@@ -70,12 +73,14 @@
                         </div>
                     </div>
 
+                    <!-- Section for editing the event description -->
                     <div class="form-section" id="event-description">
                         <label for="event_description">Event description:</label>
                         <textarea id="event_description" name="event_description" rows="4"
                             required><%= event.event_description %></textarea>
                     </div>
 
+                    <!-- Section displaying created and modified times -->
                     <div class="form-section" class="times">
                         <p id="created-time">Created at: <%= event.created_at %>
                         </p>

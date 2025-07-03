@@ -7,8 +7,10 @@ const db = new sqlite3.Database('database.db', (err) => {
 });
 
 // GET method gets organiser home page
+//Loads organiser home page with all published and draft events with counts
 router.get('/', async (req, res) => {
     try {
+        // Get site name and description from SiteSettings table
         const siteInfo = await new Promise((resolve, reject) => {
             db.get(
                 'SELECT site_name, site_description FROM SiteSettings WHERE site_setting_ID = 1',
@@ -19,7 +21,7 @@ router.get('/', async (req, res) => {
             );
         });
 
-        // Helper
+        // Helper function to get single values for counts 
         function dbGet(sql, params = []) {
             return new Promise((resolve, reject) => {
                 db.get(sql, params, (err, row) => {
@@ -29,10 +31,12 @@ router.get('/', async (req, res) => {
             });
         }
 
+        // Count all events, drafts, and published events
         const totalEvents = await dbGet('SELECT COUNT(*) AS count FROM Event');
         const draftEvents = await dbGet("SELECT COUNT(*) AS count FROM Event WHERE event_status = 'draft'");
         const publishedEvents = await dbGet("SELECT COUNT(*) AS count FROM Event WHERE event_status = 'published'");
 
+        // Fetch all published events and group their tickets
         const published = await new Promise((resolve, reject) => {
             db.all(
                 `
@@ -81,7 +85,7 @@ router.get('/', async (req, res) => {
                     event_datetime: row.event_datetime,
                     created_at: row.created_at,
                     published_at: row.published_at,
-                    image:row.image_filename,
+                    image: row.image_filename,
                     tickets: []
                 };
             }
@@ -95,13 +99,7 @@ router.get('/', async (req, res) => {
         }
         if (currentEvent) drafts.push(currentEvent);
 
-        // //Produce random images everytime user creates event
-        // const images = ['event-pose.png', 'event-mat.png', 'event-sun.png', 'event-pose2.png', 'event-ball.png'];
-        // const draftsWithImages = drafts.map((event, index) => ({
-        //     ...event,
-        //     image: images[index % images.length]
-        // }));
-
+        //render organiser home page and pass all data 
         res.render('organiser-home', {
             siteInfo,
             totalEvents: totalEvents.count,
@@ -117,7 +115,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-
+// =================================================================================================
 // GET method gets site settings page through organiser home page
 //Render site settings page with current name and description 
 router.get('/settings', (req, res) => {
@@ -153,12 +151,14 @@ router.post('/settings', (req, res) => {
     });
 });
 
-
+// =================================================================================================
 // GET method gets organiser edit page 
+//Load edit form for a specific event based on its id 
 router.get('/events/edit/:id', async (req, res) => {
     const eventID = req.params.id;
 
     try {
+        //get event details 
         const event = await new Promise((resolve, reject) => {
             db.get(
                 `SELECT * FROM Event WHERE event_ID = ?`,
@@ -171,6 +171,7 @@ router.get('/events/edit/:id', async (req, res) => {
             );
         });
 
+        //get all tickets for event
         const tickets = await new Promise((resolve, reject) => {
             db.all(
                 `SELECT * FROM TicketType WHERE event_ID = ?`,
@@ -182,6 +183,7 @@ router.get('/events/edit/:id', async (req, res) => {
             );
         });
 
+        //find full and concession tickets
         const fullTicket = tickets.find(t => t.ticket_type === 'full') || {
             quantity_available: 0,
             price: 0
@@ -192,6 +194,7 @@ router.get('/events/edit/:id', async (req, res) => {
             price: 0
         };
 
+        //render edit page with event and ticket data
         res.render('organiser-edit', {
             event,
             fullTicket,
@@ -204,7 +207,9 @@ router.get('/events/edit/:id', async (req, res) => {
     }
 });
 
+// =================================================================================================
 //POST route for edit form
+// Update an event and its tickets in the database
 router.post('/events/edit/:id', (req, res) => {
     const eventID = req.params.id;
 
@@ -290,9 +295,11 @@ router.post('/events/edit/:id', (req, res) => {
     });
 });
 
+// =========================================================================
 // Route: POST /organiser/create
 // Purpose: Create a new draft event and redirect to edit page
 router.post('/create', (req, res) => {
+    //predefined event images array 
     const images = [
         'event-pose.png',
         'event-mat.png',
@@ -321,6 +328,7 @@ router.post('/create', (req, res) => {
         }
         const eventID = this.lastID;
 
+        // Insert default tickets (full and concession) for the new event
         const sqlTicket = `
             INSERT INTO TicketType (event_ID, ticket_type, price, quantity_available)
             VALUES (?, ?, ?, ?)
@@ -344,7 +352,7 @@ router.post('/create', (req, res) => {
 });
 
 
-
+// =======================================================================
 // Route: POST /organiser/publish/:id
 // Purpose: Publish an event by updating its status and publication date
 router.post('/publish/:id', (req, res) => {
@@ -366,6 +374,7 @@ router.post('/publish/:id', (req, res) => {
     });
 });
 
+// ===============================================================================================
 // Route: POST /organiser/delete/:id
 // Purpose: Delete an event and associated tickets
 router.post('/delete/:id', (req, res) => {

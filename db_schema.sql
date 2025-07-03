@@ -5,12 +5,15 @@ PRAGMA foreign_keys=ON;
 BEGIN TRANSACTION;
 
 -- Create your tables with SQL commands here (watch out for slight syntactical differences with SQLite vs MySQL)
+
+-- Stores the site title and description displayed across pages
 CREATE TABLE SiteSettings ( 
     site_setting_ID INTEGER PRIMARY KEY,
     site_name VARCHAR(255) NOT NULL,
     site_description TEXT NOT NULL
 );
 
+-- Stores events (both drafts and published)
 CREATE TABLE Event (
     event_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     event_title VARCHAR(255) NOT NULL,
@@ -23,6 +26,7 @@ CREATE TABLE Event (
     image_filename TEXT
 );
 
+-- Stores ticket types (full or concession) for each event
 CREATE TABLE TicketType ( 
     ticket_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     event_ID INTEGER NOT NULL,
@@ -32,6 +36,7 @@ CREATE TABLE TicketType (
     FOREIGN KEY (event_ID) REFERENCES EVENT(event_ID) ON DELETE CASCADE
 ); 
 
+-- Stores individual bookings made by attendees
 CREATE TABLE Booking (
     booking_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     event_ID INTEGER NOT NULL,
@@ -40,6 +45,7 @@ CREATE TABLE Booking (
     FOREIGN KEY (event_ID) REFERENCES Event(event_ID) ON DELETE CASCADE
 );
 
+-- Stores each ticket type within a booking
 CREATE TABLE BookingItem (
     booking_item_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     booking_ID INTEGER NOT NULL,
@@ -90,6 +96,24 @@ INSERT INTO Event (
     '2025-07-05 10:00:00',
     '2025-07-16 13:00:00',
     'event-pose.png'
+),
+(
+    'Sunrise Flow Yoga',
+    'Start your day with an invigorating vinyasa flow session.',
+    '2025-08-20 06:30:00',
+    'published',
+    '2025-07-04 08:00:00',
+    '2025-07-17 09:00:00',
+    'event-mat.png'
+),
+(
+    'Lunchtime Stretch Session',
+    'A quick midday session to release tension and improve focus.',
+    '2025-08-22 12:00:00',
+    'published',
+    '2025-07-06 12:00:00',
+    '2025-07-18 13:00:00',
+    'event-ball.png'
 );
 
 -- Insert Ticket Types
@@ -98,6 +122,8 @@ INSERT INTO Event (
 -- 1: Evening Relaxation Yoga
 -- 2: Weekend Power Yoga
 -- 3: Mindful Movement Workshop
+-- 4: Sunrise Flow Yoga
+-- 5: Lunchtime Stretch Session
 
 INSERT INTO TicketType (
     event_ID, ticket_type, price, quantity_available
@@ -112,7 +138,16 @@ INSERT INTO TicketType (
 
 -- Tickets for Event 3
 (3, 'full', 30.00, 15),
-(3, 'concession', 22.00, 7);
+(3, 'concession', 22.00, 7),
+
+--Tickets for Event 4
+(4, 'full', 25.00, 20),
+(4, 'concession', 18.00, 10),
+
+-- Tickets for Event 5
+(5, 'full', 20.00, 25),
+(5, 'concession', 15.00, 12);
+
 
 -- Insert Bookings
 INSERT INTO Booking (
@@ -120,25 +155,33 @@ INSERT INTO Booking (
 ) VALUES
 (2, 'John Doe', '2025-07-20 09:00:00'),
 (2, 'Mary Johnson', '2025-07-21 14:00:00'),
-(3, 'Chris Evans', '2025-07-22 15:30:00');
+(3, 'Chris Evans', '2025-07-22 15:30:00'),
+(4, 'Alice Smith', '2025-07-23 08:30:00'),
+(5, 'David Lee', '2025-07-24 11:30:00');
+
 
 -- Insert Booking Items
 -- IMPORTANT: The booking_IDs will be:
 -- 1: John Doe
 -- 2: Mary Johnson
 -- 3: Chris Evans
+-- 4: Alice Smith
+-- 5: David Lee
+
 -- The ticket_IDs auto-increment starting from 1 in order of insertion above:
 -- 1,2: Event 1 tickets
 -- 3,4: Event 2 tickets
 -- 5,6: Event 3 tickets
+-- 7,8: Event 4 tickets
+-- 9,10: Event 5 tickets
 INSERT INTO BookingItem (
     booking_ID, ticket_ID, quantity
 ) VALUES
 (1, 3, 1),
 (2, 4, 2),
-(3, 5, 1);
-
-
+(3, 5, 1),
+(4, 7, 1),
+(5, 9, 1);
 
 COMMIT;
 
