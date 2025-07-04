@@ -6,16 +6,27 @@ BEGIN TRANSACTION;
 
 -- Create your tables with SQL commands here (watch out for slight syntactical differences with SQLite vs MySQL)
 
+-- Stores the organiser details who owns the site
+CREATE TABLE Organiser (
+    organiser_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    organiser_name TEXT NOT NULL,
+    organiser_email TEXT NOT NULL UNIQUE,
+    organiser_password TEXT NOT NULL
+);
+
 -- Stores the site title and description displayed across pages
 CREATE TABLE SiteSettings ( 
     site_setting_ID INTEGER PRIMARY KEY,
+    organiser_ID INTEGER NOT NULL,
     site_name VARCHAR(255) NOT NULL,
-    site_description TEXT NOT NULL
+    site_description TEXT NOT NULL,
+    FOREIGN KEY (organiser_ID) REFERENCES Organiser(organiser_ID) ON DELETE CASCADE
 );
 
 -- Stores events (both drafts and published)
 CREATE TABLE Event (
     event_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    organiser_ID INTEGER NOT NULL,
     event_title VARCHAR(255) NOT NULL,
     event_description TEXT NOT NULL,
     event_datetime DATETIME NOT NULL,
@@ -23,7 +34,8 @@ CREATE TABLE Event (
     created_at DATETIME NOT NULL,
     modified_at DATETIME,
     published_at DATETIME,
-    image_filename TEXT
+    image_filename TEXT,
+    FOREIGN KEY (organiser_ID) REFERENCES Organiser(organiser_ID) ON DELETE CASCADE
 );
 
 -- Stores ticket types (full or concession) for each event
@@ -36,7 +48,7 @@ CREATE TABLE TicketType (
     FOREIGN KEY (event_ID) REFERENCES EVENT(event_ID) ON DELETE CASCADE
 ); 
 
--- Stores individual bookings made by attendees
+-- Stores header record of booking transaction
 CREATE TABLE Booking (
     booking_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     event_ID INTEGER NOT NULL,
@@ -45,20 +57,26 @@ CREATE TABLE Booking (
     FOREIGN KEY (event_ID) REFERENCES Event(event_ID) ON DELETE CASCADE
 );
 
--- Stores each ticket type within a booking
-CREATE TABLE BookingItem (
-    booking_item_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+-- Stores what tickets and quantites were purchased in the booking
+CREATE TABLE BookedTicket (
+    booked_ticket_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     booking_ID INTEGER NOT NULL,
     ticket_ID INTEGER NOT NULL,
-    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    quantity INTEGER NOT NULL,
     FOREIGN KEY (booking_ID) REFERENCES Booking(booking_ID) ON DELETE CASCADE,
     FOREIGN KEY (ticket_ID) REFERENCES TicketType(ticket_ID) ON DELETE CASCADE
 );
 
 
+
 -- Insert default data (if necessary here)
+--Insert default organiser
+INSERT INTO Organiser (organiser_name, organiser_email, organiser_password)
+VALUES ('Default Organiser', 'organiser@example.com', 'passwordhash');
+
+
 -- Insert default Site Settings
-INSERT INTO SiteSettings (site_setting_ID, site_name, site_description)
+INSERT INTO SiteSettings (organiser_ID, site_name, site_description)
 VALUES (
     1,
     'The Mat Collective',
@@ -66,11 +84,11 @@ VALUES (
 );
 
 -- Insert Events
-INSERT INTO Event (
+INSERT INTO Event ( organiser_ID,
     event_title, event_description, event_datetime,
     event_status, created_at, published_at, image_filename
 ) VALUES
-(
+(    1,
     'Evening Relaxation Yoga',
     'Wind down with gentle stretches and guided meditation.',
     '2025-08-10 19:00:00',
@@ -79,7 +97,7 @@ INSERT INTO Event (
     NULL,
     'event-lily.png'
 ),
-(
+(   1,
     'Weekend Power Yoga',
     'An energizing session to start your weekend strong.',
     '2025-08-12 08:00:00',
@@ -88,7 +106,7 @@ INSERT INTO Event (
     '2025-07-15 11:00:00',
     'event-pilates.png'
 ),
-(
+(   1,
     'Mindful Movement Workshop',
     'Explore movement practices to cultivate awareness.',
     '2025-08-15 17:30:00',
@@ -97,7 +115,7 @@ INSERT INTO Event (
     '2025-07-16 13:00:00',
     'event-pose.png'
 ),
-(
+(   1,
     'Sunrise Flow Yoga',
     'Start your day with an invigorating vinyasa flow session.',
     '2025-08-20 06:30:00',
@@ -106,7 +124,7 @@ INSERT INTO Event (
     '2025-07-17 09:00:00',
     'event-mat.png'
 ),
-(
+(   1,
     'Lunchtime Stretch Session',
     'A quick midday session to release tension and improve focus.',
     '2025-08-22 12:00:00',
@@ -174,7 +192,7 @@ INSERT INTO Booking (
 -- 5,6: Event 3 tickets
 -- 7,8: Event 4 tickets
 -- 9,10: Event 5 tickets
-INSERT INTO BookingItem (
+INSERT INTO BookedTicket (
     booking_ID, ticket_ID, quantity
 ) VALUES
 (1, 3, 1),
