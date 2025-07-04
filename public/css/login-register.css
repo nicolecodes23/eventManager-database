@@ -1,0 +1,206 @@
+/* color variables */
+:root {
+    --dark-grey: #90908F;
+    --light-grey: #F2F2F2;
+    --white: #FFFFFF;
+    --black: #020202;
+    --sand: #EEE5DC;
+    --offwhite: #F5F8FA;
+    --bright-blue: #007BFF;
+    --light-blue: #F5F6FF;
+    ---light-purple: #E6E6F0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: content-box;
+}
+
+/* Body styling: center horizontally, light grey background */
+body {
+    background-color: var(--light-grey);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+/* container wrapping all content */
+.container {
+    background-color: var(--offwhite);
+    width: 100%;
+    max-width: 1430px;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 95vh;
+    margin: 1rem 0;
+    padding: 0.5rem;
+}
+
+/* main divides header and content vertically */
+main {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    margin: 1rem;
+    border-radius: 20px;
+}
+
+/* header styling */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--white);
+    border-radius: 20px;
+    margin: 0.2rem;
+}
+
+.topbar h1 {
+    margin: 0;
+    font-size: 2.1rem;
+    flex-grow: 1;
+}
+
+.return-home-btn {
+    background-color: var(--bright-blue);
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--white);
+}
+
+.return-home-btn:hover {
+    background-color: var(--white);
+    color: var(--bright-blue);
+    border: 2px solid var(--bright-blue);
+}
+
+.avatar {
+    background-color: var(--sand);
+    border-radius: 50%;
+}
+
+.avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: contain;
+}
+
+/* Outer login/register content area filling most of the width */
+.login-content {
+    width: 100%;
+    max-width: 87vw;
+    height: 70vh;
+    position: relative;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--white);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin: 2rem auto;
+}
+
+/* Form wrapper with fixed width */
+.login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    max-width: 30vw;
+    padding: 2rem;
+}
+
+.login-form h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+/* Form group wrapper (label + input) */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-size: 1.2rem;
+    color: var(--dark-grey);
+    margin-bottom: 0.5rem;
+}
+
+/* Input fields */
+.form-group input {
+    padding: 0.75rem;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border: 2px solid var(--bright-blue);
+}
+
+/* Submit buttons styling */
+.btn {
+    margin-top: 1rem;
+    font-size: 1rem;
+    background-color: var(--bright-blue);
+    border: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--white);
+    border: 2px solid transparent;
+}
+
+.btn:hover {
+    background-color: var(--white);
+    color: var(--bright-blue);
+    border: 2px solid var(--bright-blue);
+}
+
+/* Link below the form */
+.register-link {
+    font-size: 0.9rem;
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.register-link a {
+    color: var(--bright-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+/* Error message styling */
+.error-message {
+    color: red;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 900px) {
+    .login-form {
+        max-width: 40vw;
+    }
+}
