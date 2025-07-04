@@ -1,14 +1,46 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt'); 
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('database.db', (err) => {
     if (err) console.error(err);
     else db.run('PRAGMA foreign_keys = ON');
 });
+const { requireOrganiserAuth } = require('../middleware/auth');
 
-// GET method gets organiser home page
+
+const organiser_PW = 'secret123';
+// GET login page
+router.get('/login', (req, res) => {
+    res.render('login', { error: null });
+});
+
+// POST login form
+router.post('/login', async (req, res) => {
+    const password = req.body.password;
+    const storedHash = process.env.ORGANISER_PASSWORD;
+
+    const match = await bcrypt.compare(password, storedHash);
+    if (match) {
+        req.session.isOrganiser = true;
+        res.redirect('/organiser/home');
+    } else {
+        res.render('organiser-login', { error: 'Invalid password.' });
+    }
+});
+
+
+// Logout route
+router.get('/logout', (req, res) => {
+    req.session.destroy(() => {
+        res.redirect('/organiser/login');
+    });
+});
+
+//========================================================================================
+// GET method gets organiser home page after login
 //Loads organiser home page with all published and draft events with counts
-router.get('/', async (req, res) => {
+router.get('/', requireOrganiserAuth, async (req, res) => {
     try {
         // Get site name and description from SiteSettings table
         const siteInfo = await new Promise((resolve, reject) => {
