@@ -72,7 +72,7 @@ CREATE TABLE BookedTicket (
 -- Insert default data (if necessary here)
 --Insert default organiser
 INSERT INTO Organiser (organiser_name, organiser_email, organiser_password)
-VALUES ('Default Organiser', 'organiser@example.com', 'passwordhash');
+VALUES ('Default Organiser', 'organiser@example.com', '$2b$10$7ex.dfuBV6UDknCF0hPwpO/gXFtLMxxBz2zvyxX78PtjeJkAf7/fK');
 
 
 -- Insert default Site Settings

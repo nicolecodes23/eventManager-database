@@ -8,29 +8,87 @@ const db = new sqlite3.Database('database.db', (err) => {
 });
 const { requireOrganiserAuth } = require('../middleware/auth');
 
+// GET registration page
+router.get('/register', (req, res) => {
+    res.render('register', { error: null });
+});
+
+// POST registration form
+router.post('/register', async (req, res) => {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+        return res.render('register', { error: 'All fields are required.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const sql = `INSERT INTO Organiser (organiser_name, organiser_email, organiser_password)
+                 VALUES (?, ?, ?)`;
+
+    db.run(sql, [name, email, hashedPassword], function (err) {
+        if (err) {
+            if (err.code === 'SQLITE_CONSTRAINT') {
+                return res.render('register', { error: 'Email already exists.' });
+            }
+            console.error(err);
+            return res.render('register', { error: 'Registration failed.' });
+        }
+        // Auto-login after registration
+        req.session.organiser_ID = this.lastID;
+
+        // Insert default site settings for this organiser
+        const siteSql = `INSERT INTO SiteSettings (organiser_ID, site_name, site_description) VALUES (?, ?, ?)`;
+        db.run(
+            siteSql,
+            [this.lastID, 'My Event Site', 'Your description here'],
+            (err) => {
+                if (err) console.error('Failed to create site settings:', err);
+            }
+        );
+
+
+        res.redirect('/organiser/');
+    });
+});
+
+
+//========================================================================================
 // GET login page
 router.get('/login', (req, res) => {
     res.render('login', { error: null });
 });
 
 // POST login form
-router.post('/login', async (req, res) => {
+router.post('/login', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-    const storedEmail = process.env.ORGANISER_EMAIL;
-    const storedHash = process.env.ORGANISER_PASSWORD;
 
-    if (email !== storedEmail) {
-        return res.render('login', { error: 'Invalid email or password.' });
+    if (!email || !password) {
+        return res.render('login', { error: 'Email and password required.' });
     }
 
-    const match = await bcrypt.compare(password, storedHash);
-    if (match) {
-        req.session.isOrganiser = true;
-        res.redirect('/organiser/');
-    } else {
-        res.render('login', { error: 'Invalid email or password.' });
-    }
+    db.get(
+        `SELECT * FROM Organiser WHERE organiser_email = ?`,
+        [email],
+        async (err, organiser) => {
+            if (err) {
+                console.error(err);
+                return res.render('login', { error: 'Login error.' });
+            }
+            if (!organiser) {
+                return res.render('login', { error: 'Invalid email or password.' });
+            }
+
+            const match = await bcrypt.compare(password, organiser.organiser_password);
+            if (match) {
+                req.session.organiser_ID = organiser.organiser_ID;
+                res.redirect('/organiser/');
+            } else {
+                res.render('login', { error: 'Invalid email or password.' });
+            }
+        }
+    );
 });
 
 
@@ -50,13 +108,15 @@ router.get('/', requireOrganiserAuth, async (req, res) => {
         // Get site name and description from SiteSettings table
         const siteInfo = await new Promise((resolve, reject) => {
             db.get(
-                'SELECT site_name, site_description FROM SiteSettings WHERE site_setting_ID = 1',
+                'SELECT site_name, site_description FROM SiteSettings WHERE organiser_ID = ? LIMIT 1',
+                [req.session.organiser_ID],
                 (err, row) => {
                     if (err) reject(err);
                     else resolve(row);
                 }
             );
         });
+
 
         // Helper function to get single values for counts 
         function dbGet(sql, params = []) {
@@ -69,22 +129,33 @@ router.get('/', requireOrganiserAuth, async (req, res) => {
         }
 
         // Count all events, drafts, and published events
-        const totalEvents = await dbGet('SELECT COUNT(*) AS count FROM Event');
-        const draftEvents = await dbGet("SELECT COUNT(*) AS count FROM Event WHERE event_status = 'draft'");
-        const publishedEvents = await dbGet("SELECT COUNT(*) AS count FROM Event WHERE event_status = 'published'");
+        const totalEvents = await dbGet(
+            'SELECT COUNT(*) AS count FROM Event WHERE organiser_ID = ?',
+            [req.session.organiser_ID]
+        );
 
-        // Fetch all published events and group their tickets
+        const draftEvents = await dbGet(
+            "SELECT COUNT(*) AS count FROM Event WHERE organiser_ID = ? AND event_status = 'draft'",
+            [req.session.organiser_ID]
+        );
+
+        const publishedEvents = await dbGet(
+            "SELECT COUNT(*) AS count FROM Event WHERE organiser_ID = ? AND event_status = 'published'",
+            [req.session.organiser_ID]
+        );
+
         const published = await new Promise((resolve, reject) => {
             db.all(
                 `
               SELECT e.event_ID, e.event_title, e.event_datetime, e.created_at, e.published_at,
-                GROUP_CONCAT(tt.ticket_type || ' ($' || tt.price || ') - Qty: ' || tt.quantity_available, ', ') AS tickets
+              GROUP_CONCAT(tt.ticket_type || ' ($' || tt.price || ') - Qty: ' || tt.quantity_available, ', ') AS tickets
               FROM Event e
               LEFT JOIN TicketType tt ON e.event_ID = tt.event_ID
-              WHERE e.event_status = 'published'
+              WHERE e.organiser_ID = ? AND e.event_status = 'published'
               GROUP BY e.event_ID
               ORDER BY e.event_datetime ASC
               `,
+                [req.session.organiser_ID],
                 (err, rows) => {
                     if (err) reject(err);
                     else resolve(rows);
@@ -92,21 +163,23 @@ router.get('/', requireOrganiserAuth, async (req, res) => {
             );
         });
 
+
         // Draft events: fetch each ticket row separately
         const draftRows = await new Promise((resolve, reject) => {
             db.all(`
                 SELECT e.event_ID, e.event_title, e.event_datetime, e.created_at, e.published_at,
-                        e.image_filename,
+                       e.image_filename,
                        tt.ticket_type, tt.price, tt.quantity_available
                 FROM Event e
                 LEFT JOIN TicketType tt ON e.event_ID = tt.event_ID
-                WHERE e.event_status = 'draft'
+                WHERE e.organiser_ID = ? AND e.event_status = 'draft'
                 ORDER BY e.event_datetime ASC
-            `, (err, rows) => {
+            `, [req.session.organiser_ID], (err, rows) => {
                 if (err) reject(err);
                 else resolve(rows);
             });
         });
+
 
 
         // Group the rows into events with tickets[]
@@ -156,18 +229,21 @@ router.get('/', requireOrganiserAuth, async (req, res) => {
 // GET method gets site settings page through organiser home page
 //Render site settings page with current name and description 
 router.get('/settings', requireOrganiserAuth, (req, res) => {
-    db.get("SELECT * FROM SiteSettings LIMIT 1", [], (err, row) => {
-        if (err) {
-            return res.status(500).send("Database error retrieving");
-        }
+    db.get(
+        "SELECT * FROM SiteSettings WHERE organiser_ID = ? LIMIT 1",
+        [req.session.organiser_ID],
+        (err, row) => {
+            if (err) {
+                return res.status(500).send("Database error retrieving");
+            }
 
-        if (!row) {
-            // Handle missing row (e.g., insert a default setting if empty)
-            return res.status(404).send("Site settings not found in database.");
-        }
+            if (!row) {
+                // Handle missing row (e.g., insert a default setting if empty)
+                return res.status(404).send("Site settings not found in database.");
+            }
 
-        res.render('site-settings', { site: row });
-    });
+            res.render('site-settings', { site: row });
+        });
 });
 
 // Route: POST /organiser/settings
@@ -179,8 +255,8 @@ router.post('/settings', requireOrganiserAuth, (req, res) => {
         return res.status(400).send("All fields are required.");
     }
 
-    const sql = `UPDATE SiteSettings SET site_name = ?, site_description = ? WHERE site_setting_ID = 1`;
-    db.run(sql, [site_name, site_description], function (err) {
+    const sql = `UPDATE SiteSettings SET site_name = ?, site_description = ? WHERE organiser_ID = ?`;
+    db.run(sql, [site_name, site_description, req.session.organiser_ID], function (err) {
         if (err) {
             return res.status(500).send("Failed to update site settings.");
         }
@@ -198,15 +274,20 @@ router.get('/events/edit/:id', requireOrganiserAuth, async (req, res) => {
         //get event details 
         const event = await new Promise((resolve, reject) => {
             db.get(
-                `SELECT * FROM Event WHERE event_ID = ?`,
-                [eventID],
+                `SELECT * FROM Event WHERE event_ID = ? AND organiser_ID = ?`,
+                [eventID, req.session.organiser_ID],
                 (err, row) => {
                     if (err) reject(err);
-                    else if (!row) reject(new Error("Event not found"));
+                    else if (!row) {
+                        // Instead of throwing, return 404 response immediately
+                        res.status(404).send("Access denied. You are not the correct user.");
+                        return;
+                    }
                     else resolve(row);
                 }
             );
         });
+
 
         //get all tickets for event
         const tickets = await new Promise((resolve, reject) => {
@@ -240,7 +321,7 @@ router.get('/events/edit/:id', requireOrganiserAuth, async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        res.status(500).send("Error loading event data.");
+        res.status(500).send("Access denied. Login as user first.");
     }
 });
 
@@ -282,15 +363,17 @@ router.post('/events/edit/:id', requireOrganiserAuth, (req, res) => {
     db.serialize(() => {
         // Update Event
         const updateEventSql = `
-            UPDATE Event
-            SET event_title = ?,
-                event_description = ?,
-                event_datetime = ?,
-                modified_at = datetime('now','localtime')
-            WHERE event_ID = ?
-        `;
+        UPDATE Event
+        SET event_title = ?,
+            event_description = ?,
+            event_datetime = ?,
+            modified_at = datetime('now','localtime')
+        WHERE event_ID = ? AND organiser_ID = ?
+      `;
 
-        db.run(updateEventSql, [event_title, event_description, event_datetime, eventID], function (err) {
+        db.run(updateEventSql, [event_title, event_description, event_datetime, eventID, req.session.organiser_ID], function (err) {
+
+
             if (err) {
                 console.error(err);
                 return res.status(500).send("Failed to update event.");
@@ -351,14 +434,14 @@ router.post('/create', requireOrganiserAuth, (req, res) => {
     const randomImage = images[Math.floor(Math.random() * images.length)];
 
     const sqlEvent = `
-        INSERT INTO Event (event_title, event_description, event_datetime, created_at, event_status, image_filename)
-        VALUES (?, ?, ?, datetime('now','localtime'), 'draft', ?)
+        INSERT INTO Event (organiser_ID, event_title, event_description, event_datetime, created_at, event_status, image_filename)
+        VALUES (?, ?, ?, ?, datetime('now','localtime'), 'draft', ?)
     `;
     const defaultTitle = 'Untitled Event';
     const defaultDescription = '';
-    const defaultDate = new Date().toISOString().split('T')[0];
+    const defaultDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-    db.run(sqlEvent, [defaultTitle, defaultDescription, defaultDate, randomImage], function (err) {
+    db.run(sqlEvent, [req.session.organiser_ID, defaultTitle, defaultDescription, defaultDate, randomImage], function (err) {
         if (err) {
             console.error(err);
             return res.status(500).send("Failed to create event.");
@@ -396,13 +479,14 @@ router.post('/publish/:id', requireOrganiserAuth, (req, res) => {
     const { id } = req.params;
 
     const sql = `
-        UPDATE Event
-        SET event_status = 'published',
-            published_at = datetime('now','localtime')
-        WHERE event_ID = ?
-    `;
+    UPDATE Event
+    SET event_status = 'published',
+        published_at = datetime('now','localtime')
+    WHERE event_ID = ? AND organiser_ID = ?
+  `;
 
-    db.run(sql, [id], function (err) {
+    db.run(sql, [id, req.session.organiser_ID], function (err) {
+
         if (err) {
             console.error(err);
             return res.status(500).send("Failed to publish event.");
@@ -414,15 +498,16 @@ router.post('/publish/:id', requireOrganiserAuth, (req, res) => {
 // ===============================================================================================
 // Route: POST /organiser/delete/:id
 // Purpose: Delete an event and associated tickets
+// Route: POST /organiser/delete/:id
 router.post('/delete/:id', requireOrganiserAuth, (req, res) => {
     const { id } = req.params;
 
     const sql = `
         DELETE FROM Event
-        WHERE event_ID = ?
+        WHERE event_ID = ? AND organiser_ID = ?
     `;
 
-    db.run(sql, [id], function (err) {
+    db.run(sql, [id, req.session.organiser_ID], function (err) {
         if (err) {
             console.error(err);
             return res.status(500).send("Failed to delete event.");
@@ -430,6 +515,7 @@ router.post('/delete/:id', requireOrganiserAuth, (req, res) => {
         res.redirect('/organiser');
     });
 });
+
 
 
 

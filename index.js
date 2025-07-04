@@ -18,8 +18,6 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
-require('dotenv').config();
-
 
 // Set up SQLite
 // Items in the global namespace are accessible throught out the node application

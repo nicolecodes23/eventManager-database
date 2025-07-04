@@ -1,5 +1,5 @@
 function requireOrganiserAuth(req, res, next) {
-    if (req.session && req.session.isOrganiser) {
+    if (req.session && req.session.organiser_ID) {
         next();
     } else {
         res.redirect('/organiser/login');

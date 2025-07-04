@@ -2,27 +2,29 @@
 <html>
 
 <head>
-    <title>Organiser Login</title>
+    <title>Register Organiser</title>
 </head>
 
 <body>
-    <h1>Organiser Login</h1>
+    <h1>Register</h1>
     <% if (error) { %>
         <p style="color:red;">
             <%= error %>
         </p>
         <% } %>
-            <form action="/organiser/login" method="POST">
+            <form action="/organiser/register" method="POST">
+                <label>Name:</label>
+                <input type="text" name="name" required>
+                <br>
                 <label>Email:</label>
                 <input type="email" name="email" required>
                 <br>
                 <label>Password:</label>
                 <input type="password" name="password" required>
                 <br>
-                <button type="submit">Log In</button>
+                <button type="submit">Register</button>
             </form>
-            <p>Don't have an account? <a href="/organiser/register">Register here</a>.</p>
-
+            <p>Already have an account? <a href="/organiser/login">Login</a></p>
 </body>
 
 </html>
