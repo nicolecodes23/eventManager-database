@@ -15,17 +15,24 @@ router.get('/login', (req, res) => {
 
 // POST login form
 router.post('/login', async (req, res) => {
+    const email = req.body.email;
     const password = req.body.password;
+    const storedEmail = process.env.ORGANISER_EMAIL;
     const storedHash = process.env.ORGANISER_PASSWORD;
+
+    if (email !== storedEmail) {
+        return res.render('login', { error: 'Invalid email or password.' });
+    }
 
     const match = await bcrypt.compare(password, storedHash);
     if (match) {
         req.session.isOrganiser = true;
         res.redirect('/organiser/');
     } else {
-        res.render('login', { error: 'Invalid password.' });
+        res.render('login', { error: 'Invalid email or password.' });
     }
 });
+
 
 
 // Logout route
