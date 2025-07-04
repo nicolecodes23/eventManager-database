@@ -12,25 +12,29 @@ const db = new sqlite3.Database('database.db', (err) => {
  * Outputs: attendee-home.ejs rendered with site data and events data
  */
 router.get('/', (req, res) => {
-    // Query site name and description
+    // If logged in, use their organiser_ID; else default to 1
+    const organiserID = req.session.organiser_ID || 1;
+
+    //Site settings of the current organiser
     db.get(
-        "SELECT site_name, site_description FROM SiteSettings WHERE organiser_ID = 1",
+        "SELECT site_name, site_description FROM SiteSettings WHERE organiser_ID = ?",
+        [organiserID],
         (err, siteRow) => {
             if (err) {
                 console.error(err);
                 return res.status(500).send("Error retrieving site settings.");
             }
 
-            // Query all published events ordered by event_date
+            //All published events regardless of organiser
             db.all(
                 "SELECT event_ID, event_title, event_datetime, event_description, image_filename FROM Event WHERE event_status = 'published' ORDER BY event_datetime ASC",
+                [],
                 (err, events) => {
                     if (err) {
                         console.error(err);
                         return res.status(500).send("Error retrieving events.");
                     }
 
-                    // Render the EJS template and pass data
                     res.render('attendee-home', {
                         site: siteRow,
                         events: events
@@ -40,6 +44,7 @@ router.get('/', (req, res) => {
         }
     );
 });
+
 
 //=====================================================================
 // GET method to get /attendee/event/:id attendee event page
