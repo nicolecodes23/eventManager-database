@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt'); 
+const bcrypt = require('bcrypt');
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('database.db', (err) => {
     if (err) console.error(err);
@@ -8,8 +8,6 @@ const db = new sqlite3.Database('database.db', (err) => {
 });
 const { requireOrganiserAuth } = require('../middleware/auth');
 
-
-const organiser_PW = 'secret123';
 // GET login page
 router.get('/login', (req, res) => {
     res.render('login', { error: null });
@@ -23,9 +21,9 @@ router.post('/login', async (req, res) => {
     const match = await bcrypt.compare(password, storedHash);
     if (match) {
         req.session.isOrganiser = true;
-        res.redirect('/organiser/home');
+        res.redirect('/organiser/');
     } else {
-        res.render('organiser-login', { error: 'Invalid password.' });
+        res.render('login', { error: 'Invalid password.' });
     }
 });
 
@@ -150,7 +148,7 @@ router.get('/', requireOrganiserAuth, async (req, res) => {
 // =================================================================================================
 // GET method gets site settings page through organiser home page
 //Render site settings page with current name and description 
-router.get('/settings', (req, res) => {
+router.get('/settings', requireOrganiserAuth, (req, res) => {
     db.get("SELECT * FROM SiteSettings LIMIT 1", [], (err, row) => {
         if (err) {
             return res.status(500).send("Database error retrieving");
@@ -167,7 +165,7 @@ router.get('/settings', (req, res) => {
 
 // Route: POST /organiser/settings
 // Purpose: Update site name and description, then redirect to organiser home
-router.post('/settings', (req, res) => {
+router.post('/settings', requireOrganiserAuth, (req, res) => {
     const { site_name, site_description } = req.body;
 
     if (!site_name || !site_description) {
@@ -186,7 +184,7 @@ router.post('/settings', (req, res) => {
 // =================================================================================================
 // GET method gets organiser edit page 
 //Load edit form for a specific event based on its id 
-router.get('/events/edit/:id', async (req, res) => {
+router.get('/events/edit/:id', requireOrganiserAuth, async (req, res) => {
     const eventID = req.params.id;
 
     try {
@@ -242,7 +240,7 @@ router.get('/events/edit/:id', async (req, res) => {
 // =================================================================================================
 //POST route for edit form
 // Update an event and its tickets in the database
-router.post('/events/edit/:id', (req, res) => {
+router.post('/events/edit/:id', requireOrganiserAuth, (req, res) => {
     const eventID = req.params.id;
 
     const {
@@ -330,7 +328,7 @@ router.post('/events/edit/:id', (req, res) => {
 // =========================================================================
 // Route: POST /organiser/create
 // Purpose: Create a new draft event and redirect to edit page
-router.post('/create', (req, res) => {
+router.post('/create', requireOrganiserAuth, (req, res) => {
     //predefined event images array 
     const images = [
         'event-pose.png',
@@ -387,7 +385,7 @@ router.post('/create', (req, res) => {
 // =======================================================================
 // Route: POST /organiser/publish/:id
 // Purpose: Publish an event by updating its status and publication date
-router.post('/publish/:id', (req, res) => {
+router.post('/publish/:id', requireOrganiserAuth, (req, res) => {
     const { id } = req.params;
 
     const sql = `
@@ -409,7 +407,7 @@ router.post('/publish/:id', (req, res) => {
 // ===============================================================================================
 // Route: POST /organiser/delete/:id
 // Purpose: Delete an event and associated tickets
-router.post('/delete/:id', (req, res) => {
+router.post('/delete/:id', requireOrganiserAuth, (req, res) => {
     const { id } = req.params;
 
     const sql = `
