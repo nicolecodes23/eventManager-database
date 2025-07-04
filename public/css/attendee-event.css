@@ -226,6 +226,13 @@ main {
   border: 2px solid var(--bright-blue);
 }
 
+.sold-out-message {
+  color: red;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
 @media (max-width: 900px) {
   .content {
     display: flex;

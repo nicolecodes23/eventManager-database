@@ -14,7 +14,7 @@ const db = new sqlite3.Database('database.db', (err) => {
 router.get('/', (req, res) => {
     // Query site name and description
     db.get(
-        "SELECT site_name, site_description FROM SiteSettings WHERE site_setting_ID = 1",
+        "SELECT site_name, site_description FROM SiteSettings WHERE organiser_ID = 1",
         (err, siteRow) => {
             if (err) {
                 console.error(err);
@@ -168,14 +168,14 @@ router.post('/event/:id/book', (req, res) => {
                     const bookingId = this.lastID;
 
                     // 3. Insert booking items for each ticket type
-                    const insertBookingItem = db.prepare(
-                        `INSERT INTO BookingItem (booking_ID, ticket_ID, quantity) VALUES (?, ?, ?)`
+                    const insertBookedTicket = db.prepare(
+                        `INSERT INTO BookedTicket (booking_ID, ticket_ID, quantity) VALUES (?, ?, ?)`
                     );
 
-                    if (fullQty > 0) insertBookingItem.run(bookingId, ticketIdFull, fullQty);
-                    if (concessionQty > 0) insertBookingItem.run(bookingId, ticketIdConcession, concessionQty);
+                    if (fullQty > 0) insertBookedTicket.run(bookingId, ticketIdFull, fullQty);
+                    if (concessionQty > 0) insertBookedTicket.run(bookingId, ticketIdConcession, concessionQty);
 
-                    insertBookingItem.finalize();
+                    insertBookedTicket.finalize();
 
                     // 4. Update ticket quantities to subtract booked tickets
                     const updateTicket = db.prepare(

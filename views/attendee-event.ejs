@@ -70,8 +70,7 @@
                         <fieldset class="ticket-selection">
                             <legend>Book Your Session</legend>
 
-                            <div class="ticket-option">
-                                <label for="full_quantity">Full Ticket</label>
+                            <% if (ticketAvailability.full> 0) { %>
                                 <div class="ticket-controls">
                                     <input type="number" id="full_quantity" name="full_quantity" value="0" min="0"
                                         max="<%= ticketAvailability.full %>">
@@ -80,19 +79,29 @@
                                         <%= ticketAvailability.full %> tickets left
                                     </span>
                                 </div>
-                            </div>
+                                <% } else { %>
+                                    <div class="ticket-controls sold-out-message">
+                                        <span>Full Price Tickets Sold Out</span>
+                                    </div>
+                                    <% } %>
 
-                            <div class="ticket-option">
-                                <label for="concession_quantity">Concession Ticket</label>
-                                <div class="ticket-controls">
-                                    <input type="number" id="concession_quantity" name="concession_quantity" value="0"
-                                        min="0" max="<%= ticketAvailability.concession %>">
-                                    <span class="ticket-price">$<%= ticketPrices.concession.toFixed(2) %></span>
-                                    <span class="ticket-available">
-                                        <%= ticketAvailability.concession %> tickets left
-                                    </span>
-                                </div>
-                            </div>
+
+                                        <% if (ticketAvailability.concession> 0) { %>
+                                            <div class="ticket-controls">
+                                                <input type="number" id="concession_quantity" name="concession_quantity"
+                                                    value="0" min="0" max="<%= ticketAvailability.concession %>">
+                                                <span class="ticket-price">$<%= ticketPrices.concession.toFixed(2) %>
+                                                        </span>
+                                                <span class="ticket-available">
+                                                    <%= ticketAvailability.concession %> tickets left
+                                                </span>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="ticket-controls sold-out-message">
+                                                    <span> Concession Tickets Sold Out</span>
+                                                </div>
+                                                <% } %>
+
                         </fieldset>
 
                         <button type="submit" class="btn-book">Book Now</button>
