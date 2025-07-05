@@ -171,11 +171,13 @@ main {
 /* Inputs styling */
 .booking-form input[type="text"],
 .booking-form input[type="number"] {
-  padding: 0.75rem 1rem;
+  padding: 0.75rem;
   border-radius: 12px;
   border: 2px solid transparent;
   font-size: 1rem;
   background-color: var(--offwhite);
+  margin-bottom: 0.5rem;
+  min-width: 50px;
 }
 
 /* Ticket selection fieldset */
