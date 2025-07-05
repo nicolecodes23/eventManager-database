@@ -8,14 +8,15 @@ const db = new sqlite3.Database('database.db', (err) => {
 
 /**
  * GET /attendee
- * Purpose: Render the Attendee Home Page showing site info and published events.
- * Outputs: attendee-home.ejs rendered with site data and events data
+ * Purpose: Render the Attendee Home Page showing the site name/description and all published events.
+ * Inputs: organiser_ID from session if logged in, else defaults to 1.
+ * Outputs: Renders attendee-home.ejs with site data and events data.
  */
 router.get('/', (req, res) => {
     // If logged in, use their organiser_ID; else default to 1
     const organiserID = req.session.organiser_ID || 1;
 
-    //Site settings of the current organiser
+    // Retrieve site settings (name and description) for the current or default organiser
     db.get(
         "SELECT site_name, site_description FROM SiteSettings WHERE organiser_ID = ?",
         [organiserID],
@@ -25,7 +26,7 @@ router.get('/', (req, res) => {
                 return res.status(500).send("Error retrieving site settings.");
             }
 
-            //All published events regardless of organiser
+            // Retrieve all published events (Inputs: none; Outputs: list of events)
             db.all(
                 "SELECT event_ID, event_title, event_datetime, event_description, image_filename FROM Event WHERE event_status = 'published' ORDER BY event_datetime ASC",
                 [],
@@ -47,12 +48,16 @@ router.get('/', (req, res) => {
 
 
 //=====================================================================
-// GET method to get /attendee/event/:id attendee event page
-// Purpose: Show the event page for a specific event
+/**
+ * GET /attendee/event/:id
+ * Purpose: Display the details of a specific published event and show available tickets.
+ * Inputs: event ID from URL params.
+ * Outputs: Renders attendee-event.ejs with event and ticket data.
+ */
 router.get('/event/:id', (req, res) => {
     const eventId = req.params.id;
 
-    // 1. Query Event by ID, must be published 
+    // Retrieve event details if published (Inputs: event_ID; Outputs: Event row)
     db.get(
         `SELECT event_ID, event_title, event_description, event_datetime, image_filename
         FROM Event
@@ -68,7 +73,7 @@ router.get('/event/:id', (req, res) => {
                 return res.status(404).send("Event not found or not published.");
             }
 
-            // 2. Query Ticket Types for this event
+            // Retrieve ticket types and quantities for this event (Inputs: event_ID; Outputs: list of TicketType rows)
             db.all(
                 `SELECT ticket_type, price, quantity_available FROM TicketType WHERE event_ID = ?`,
                 [eventId],
@@ -93,7 +98,7 @@ router.get('/event/:id', (req, res) => {
                         }
                     });
 
-                    // 3. Render EJS with all data
+                    // Render EJS with all data
                     res.render('attendee-event', {
                         event: eventRow,
                         ticketPrices,
@@ -105,10 +110,13 @@ router.get('/event/:id', (req, res) => {
     );
 });
 
-// POST /attendee/events/:id/book
-// Purpose: Handle booking submission
-// Inputs: Event ID, attendee name, quantities
-// Outputs: Create booking, update quantities, redirect
+/**
+ * POST /attendee/event/:id/book
+ * Purpose: Handle booking submission for an event.
+ * Inputs: event ID from URL params, attendee_name, full_quantity, concession_quantity from form body.
+ * Outputs: Creates Booking and BookedTicket records, updates ticket quantities, redirects to attendee home.
+ */
+
 router.post('/event/:id/book', (req, res) => {
     const eventId = req.params.id;
     const { attendee_name, full_quantity, concession_quantity } = req.body;
@@ -127,7 +135,7 @@ router.post('/event/:id/book', (req, res) => {
         return res.status(400).send("Please select at least one ticket.");
     }
 
-    // 1. Check available tickets quantites 
+    // Retrieve available ticket quantities for this event (Inputs: event_ID; Outputs: TicketType rows with availability)
     db.all(
         `SELECT ticket_ID, ticket_type, quantity_available FROM TicketType WHERE event_ID = ?`,
         [eventId],
@@ -159,7 +167,7 @@ router.post('/event/:id/book', (req, res) => {
                 return res.status(400).send("Not enough tickets available.");
             }
 
-            // 2. Insert booking into booking table 
+            // Insert booking record (Inputs: attendee name, event_ID; Outputs: Booking row created)
             db.run(
                 `INSERT INTO Booking (attendee_name, event_ID, booked_date) VALUES (?, ?, datetime('now'))`,
                 [attendee_name, eventId],
@@ -172,7 +180,7 @@ router.post('/event/:id/book', (req, res) => {
                     //retrieve booking ID of newly inserted booking
                     const bookingId = this.lastID;
 
-                    // 3. Insert booking items for each ticket type
+                    // Insert booking items for each ticket type
                     const insertBookedTicket = db.prepare(
                         `INSERT INTO BookedTicket (booking_ID, ticket_ID, quantity) VALUES (?, ?, ?)`
                     );
@@ -182,7 +190,7 @@ router.post('/event/:id/book', (req, res) => {
 
                     insertBookedTicket.finalize();
 
-                    // 4. Update ticket quantities to subtract booked tickets
+                    //Update ticket quantities to subtract booked tickets
                     const updateTicket = db.prepare(
                         `UPDATE TicketType SET quantity_available = quantity_available - ? WHERE event_ID = ? AND ticket_type = ?`
                     );
@@ -192,7 +200,7 @@ router.post('/event/:id/book', (req, res) => {
 
                     updateTicket.finalize();
 
-                    // 5. Redirect to attendee home
+                    //Redirect to attendee home
                     res.redirect('/attendee');
                 }
             );

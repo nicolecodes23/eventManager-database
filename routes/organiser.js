@@ -8,12 +8,22 @@ const db = new sqlite3.Database('database.db', (err) => {
 });
 const { requireOrganiserAuth } = require('../middleware/auth');
 
-// GET registration page
+/**
+ * GET /register
+ * Purpose: Display the organiser registration form.
+ * Inputs: None
+ * Outputs: Renders register.ejs
+ */
 router.get('/register', (req, res) => {
     res.render('register', { error: null });
 });
 
-// POST registration form
+/**
+ * POST /register
+ * Purpose: Handle organiser registration submission.
+ * Inputs: name, email, password (from form body)
+ * Outputs: Inserts new organiser and default site settings into the database, logs in user, redirects to organiser home.
+ */
 router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -26,6 +36,7 @@ router.post('/register', async (req, res) => {
     const sql = `INSERT INTO Organiser (organiser_name, organiser_email, organiser_password)
                  VALUES (?, ?, ?)`;
 
+    // Insert the new organiser into the Organiser table (Inputs: name, email, hashedPassword; Outputs: new organiser_ID)
     db.run(sql, [name, email, hashedPassword], function (err) {
         if (err) {
             if (err.code === 'SQLITE_CONSTRAINT') {
@@ -39,6 +50,7 @@ router.post('/register', async (req, res) => {
 
         // Insert default site settings for this organiser
         const siteSql = `INSERT INTO SiteSettings (organiser_ID, site_name, site_description) VALUES (?, ?, ?)`;
+        // Insert default site settings for the new organiser (Inputs: organiser_ID; Outputs: SiteSettings row created)
         db.run(
             siteSql,
             [this.lastID, 'My Event Site', 'Your description here'],
@@ -54,12 +66,22 @@ router.post('/register', async (req, res) => {
 
 
 //========================================================================================
-// GET login page
+/**
+ * GET /login
+ * Purpose: Display the organiser login form.
+ * Inputs: None
+ * Outputs: Renders login.ejs
+ */
 router.get('/login', (req, res) => {
     res.render('login', { error: null });
 });
 
-// POST login form
+/**
+ * POST /login
+ * Purpose: Handle organiser login.
+ * Inputs: email, password (from form body)
+ * Outputs: Verifies credentials, sets session, redirects to organiser home if successful.
+ */
 router.post('/login', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -68,6 +90,7 @@ router.post('/login', (req, res) => {
         return res.render('login', { error: 'Email and password required.' });
     }
 
+    // Retrieve organiser details by email (Inputs: email; Outputs: Organiser record if found)
     db.get(
         `SELECT * FROM Organiser WHERE organiser_email = ?`,
         [email],
@@ -93,7 +116,12 @@ router.post('/login', (req, res) => {
 
 
 
-// Logout route
+/**
+ * GET /logout
+ * Purpose: Log out organiser by destroying session.
+ * Inputs: None
+ * Outputs: Session destroyed, redirects to login page.
+ */
 router.get('/logout', (req, res) => {
     req.session.destroy(() => {
         res.redirect('/organiser/login');
@@ -101,12 +129,18 @@ router.get('/logout', (req, res) => {
 });
 
 //========================================================================================
-// GET method gets organiser home page after login
+/**
+ * GET /
+ * Purpose: Display organiser home page with site info, event counts, and lists of draft and published events.
+ * Inputs: organiser_ID from session
+ * Outputs: Renders organiser-home.ejs with all organiser's data
+ */
 //Loads organiser home page with all published and draft events with counts
 router.get('/', requireOrganiserAuth, async (req, res) => {
     try {
         // Get site name and description from SiteSettings table
         const siteInfo = await new Promise((resolve, reject) => {
+            // Retrieve site name and description (Inputs: organiser_ID; Outputs: SiteSettings row)
             db.get(
                 'SELECT site_name, site_description FROM SiteSettings WHERE organiser_ID = ? LIMIT 1',
                 [req.session.organiser_ID],
@@ -128,23 +162,26 @@ router.get('/', requireOrganiserAuth, async (req, res) => {
             });
         }
 
-        // Count all events, drafts, and published events
+        // Count all events for organiser (Inputs: organiser_ID; Outputs: count)
         const totalEvents = await dbGet(
             'SELECT COUNT(*) AS count FROM Event WHERE organiser_ID = ?',
             [req.session.organiser_ID]
         );
 
+        // Count draft events for organiser (Inputs: organiser_ID; Outputs: count)
         const draftEvents = await dbGet(
             "SELECT COUNT(*) AS count FROM Event WHERE organiser_ID = ? AND event_status = 'draft'",
             [req.session.organiser_ID]
         );
 
+        // Count published events for organiser (Inputs: organiser_ID; Outputs: count)
         const publishedEvents = await dbGet(
             "SELECT COUNT(*) AS count FROM Event WHERE organiser_ID = ? AND event_status = 'published'",
             [req.session.organiser_ID]
         );
 
         const published = await new Promise((resolve, reject) => {
+            // Get published events and aggregated ticket info (Inputs: organiser_ID; Outputs: list of published events)
             db.all(
                 `
               SELECT e.event_ID, e.event_title, e.event_datetime, e.created_at, e.published_at,
@@ -166,6 +203,7 @@ router.get('/', requireOrganiserAuth, async (req, res) => {
 
         // Draft events: fetch each ticket row separately
         const draftRows = await new Promise((resolve, reject) => {
+            // Get draft events and their tickets (Inputs: organiser_ID; Outputs: list of draft events with ticket details)
             db.all(`
                 SELECT e.event_ID, e.event_title, e.event_datetime, e.created_at, e.published_at,
                        e.image_filename,
@@ -226,9 +264,15 @@ router.get('/', requireOrganiserAuth, async (req, res) => {
 });
 
 // =================================================================================================
-// GET method gets site settings page through organiser home page
+/**
+ * GET /settings
+ * Purpose: Display site settings form.
+ * Inputs: organiser_ID from session
+ * Outputs: Renders site-settings.ejs with current settings.
+ */
 //Render site settings page with current name and description 
 router.get('/settings', requireOrganiserAuth, (req, res) => {
+    // Retrieve current site settings for organiser (Inputs: organiser_ID; Outputs: SiteSettings row)
     db.get(
         "SELECT * FROM SiteSettings WHERE organiser_ID = ? LIMIT 1",
         [req.session.organiser_ID],
@@ -246,8 +290,12 @@ router.get('/settings', requireOrganiserAuth, (req, res) => {
         });
 });
 
-// Route: POST /organiser/settings
-// Purpose: Update site name and description, then redirect to organiser home
+/**
+ * POST /settings
+ * Purpose: Update site name and description.
+ * Inputs: site_name, site_description (from form body), organiser_ID
+ * Outputs: Updates SiteSettings table, redirects to organiser home.
+ */
 router.post('/settings', requireOrganiserAuth, (req, res) => {
     const { site_name, site_description } = req.body;
 
@@ -256,6 +304,7 @@ router.post('/settings', requireOrganiserAuth, (req, res) => {
     }
 
     const sql = `UPDATE SiteSettings SET site_name = ?, site_description = ? WHERE organiser_ID = ?`;
+    // Update SiteSettings table with new name and description (Inputs: site_name, site_description, organiser_ID; Outputs: SiteSettings updated)
     db.run(sql, [site_name, site_description, req.session.organiser_ID], function (err) {
         if (err) {
             return res.status(500).send("Failed to update site settings.");
@@ -265,14 +314,19 @@ router.post('/settings', requireOrganiserAuth, (req, res) => {
 });
 
 // =================================================================================================
-// GET method gets organiser edit page 
-//Load edit form for a specific event based on its id 
+/**
+ * GET /events/edit/:id
+ * Purpose: Display form to edit an event.
+ * Inputs: event_ID from URL params, organiser_ID from session
+ * Outputs: Renders organiser-edit.ejs with event and ticket data.
+ */
 router.get('/events/edit/:id', requireOrganiserAuth, async (req, res) => {
     const eventID = req.params.id;
 
     try {
         //get event details 
         const event = await new Promise((resolve, reject) => {
+            // Retrieve event details (Inputs: event_ID, organiser_ID; Outputs: Event row)
             db.get(
                 `SELECT * FROM Event WHERE event_ID = ? AND organiser_ID = ?`,
                 [eventID, req.session.organiser_ID],
@@ -291,6 +345,7 @@ router.get('/events/edit/:id', requireOrganiserAuth, async (req, res) => {
 
         //get all tickets for event
         const tickets = await new Promise((resolve, reject) => {
+            // Retrieve all tickets for this event (Inputs: event_ID; Outputs: list of TicketType rows)
             db.all(
                 `SELECT * FROM TicketType WHERE event_ID = ?`,
                 [eventID],
@@ -326,8 +381,12 @@ router.get('/events/edit/:id', requireOrganiserAuth, async (req, res) => {
 });
 
 // =================================================================================================
-//POST route for edit form
-// Update an event and its tickets in the database
+/**
+ * POST /events/edit/:id
+ * Purpose: Update event details and ticket information.
+ * Inputs: event_ID, event details and ticket details from form
+ * Outputs: Updates Event and TicketType tables, redirects to organiser home.
+ */
 router.post('/events/edit/:id', requireOrganiserAuth, (req, res) => {
     const eventID = req.params.id;
 
@@ -371,6 +430,7 @@ router.post('/events/edit/:id', requireOrganiserAuth, (req, res) => {
         WHERE event_ID = ? AND organiser_ID = ?
       `;
 
+        // Update event details in Event table (Inputs: event data; Outputs: Event updated)
         db.run(updateEventSql, [event_title, event_description, event_datetime, eventID, req.session.organiser_ID], function (err) {
 
 
@@ -387,6 +447,7 @@ router.post('/events/edit/:id', requireOrganiserAuth, (req, res) => {
                 WHERE event_ID = ? AND ticket_type = 'full'
             `;
 
+            // Update full ticket details (Inputs: quantity, price, event_ID; Outputs: TicketType updated)
             db.run(updateFullTicketSql, [full_quantity, full_price, eventID], function (err) {
                 if (err) {
                     console.error(err);
@@ -401,6 +462,7 @@ router.post('/events/edit/:id', requireOrganiserAuth, (req, res) => {
                     WHERE event_ID = ? AND ticket_type = 'concession'
                 `;
 
+                // Update concession ticket details (Inputs: quantity, price, event_ID; Outputs: TicketType updated)
                 db.run(updateConcessionTicketSql, [concession_quantity, concession_price, eventID], function (err) {
                     if (err) {
                         console.error(err);
@@ -416,8 +478,12 @@ router.post('/events/edit/:id', requireOrganiserAuth, (req, res) => {
 });
 
 // =========================================================================
-// Route: POST /organiser/create
-// Purpose: Create a new draft event and redirect to edit page
+/**
+ * POST /create
+ * Purpose: Create a new draft event with default values.
+ * Inputs: organiser_ID from session
+ * Outputs: Inserts Event and TicketType rows, redirects to event edit page.
+ */
 router.post('/create', requireOrganiserAuth, (req, res) => {
     //predefined event images array 
     const images = [
@@ -441,6 +507,7 @@ router.post('/create', requireOrganiserAuth, (req, res) => {
     const defaultDescription = '';
     const defaultDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
+    // Insert new draft event (Inputs: organiser_ID, default title/description/date, image; Outputs: new event_ID)
     db.run(sqlEvent, [req.session.organiser_ID, defaultTitle, defaultDescription, defaultDate, randomImage], function (err) {
         if (err) {
             console.error(err);
@@ -454,11 +521,13 @@ router.post('/create', requireOrganiserAuth, (req, res) => {
             VALUES (?, ?, ?, ?)
         `;
 
+        // Insert default full ticket for event (Inputs: event_ID; Outputs: TicketType row)
         db.run(sqlTicket, [eventID, 'full', 0, 0], function (err) {
             if (err) {
                 console.error(err);
                 return res.status(500).send("Failed to create full ticket.");
             }
+            // Insert default concession ticket for event (Inputs: event_ID; Outputs: TicketType row)
             db.run(sqlTicket, [eventID, 'concession', 0, 0], function (err) {
                 if (err) {
                     console.error(err);
@@ -473,8 +542,12 @@ router.post('/create', requireOrganiserAuth, (req, res) => {
 
 
 // =======================================================================
-// Route: POST /organiser/publish/:id
-// Purpose: Publish an event by updating its status and publication date
+/**
+ * POST /publish/:id
+ * Purpose: Mark event as published.
+ * Inputs: event_ID from URL params
+ * Outputs: Updates Event status and published_at date.
+ */
 router.post('/publish/:id', requireOrganiserAuth, (req, res) => {
     const { id } = req.params;
 
@@ -485,6 +558,7 @@ router.post('/publish/:id', requireOrganiserAuth, (req, res) => {
     WHERE event_ID = ? AND organiser_ID = ?
   `;
 
+    // Update event status to 'published' and set published_at timestamp (Inputs: event_ID, organiser_ID; Outputs: Event updated)
     db.run(sql, [id, req.session.organiser_ID], function (err) {
 
         if (err) {
@@ -496,9 +570,12 @@ router.post('/publish/:id', requireOrganiserAuth, (req, res) => {
 });
 
 // ===============================================================================================
-// Route: POST /organiser/delete/:id
-// Purpose: Delete an event and associated tickets
-// Route: POST /organiser/delete/:id
+/**
+ * POST /delete/:id
+ * Purpose: Delete an event.
+ * Inputs: event_ID from URL params
+ * Outputs: Deletes Event row (and cascade deletes TicketTypes if foreign keys set up)
+ */
 router.post('/delete/:id', requireOrganiserAuth, (req, res) => {
     const { id } = req.params;
 
@@ -507,6 +584,7 @@ router.post('/delete/:id', requireOrganiserAuth, (req, res) => {
         WHERE event_ID = ? AND organiser_ID = ?
     `;
 
+    // Delete event from Event table (Inputs: event_ID, organiser_ID; Outputs: Event removed)
     db.run(sql, [id, req.session.organiser_ID], function (err) {
         if (err) {
             console.error(err);
