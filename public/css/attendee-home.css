@@ -142,6 +142,18 @@ main {
     font-size: 0.9rem;
 }
 
+/* Label that sits above the first card */
+.next-label {
+    width: fit-content;
+    height: fit-content;
+    padding: 0.5rem;
+    align-self: flex-start;
+    position: relative;
+    top: 37%;
+    font-size: 1.5rem;
+    color: var(--dark-grey);
+}
+
 /* Cards container styled as horizontal scroll */
 .cards-wrapper {
     width: 100%;
@@ -306,4 +318,13 @@ main {
     font-style: italic;
     color: #777;
     margin: 2rem;
+}
+
+@media (max-width: 900px) {
+    .next-label {
+        font-size: 1.4rem;
+        z-index: 10;
+        top: 39%;
+        left: 18%;
+    }
 }

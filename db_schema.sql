@@ -79,8 +79,8 @@ VALUES ('Default Organiser', 'organiser@example.com', '$2b$10$7ex.dfuBV6UDknCF0h
 INSERT INTO SiteSettings (organiser_ID, site_name, site_description)
 VALUES (
     1,
-    'The Mat Collective',
-    'Not your ordinary mats. A place to be calm, curious and creative - one event at a time'
+    'The Collective Club',
+    'Not your ordinary community club. Be your own event organiser. We welcome organisers from all interests. The Collective Club makes it easy to bring your event ideas to life and connect with like-minded individuals. It`s your community, your events, your way. '
 );
 
 -- Insert Events
