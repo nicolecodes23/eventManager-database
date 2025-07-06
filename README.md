@@ -1,66 +1,122 @@
-##  Coursework Template ##
-### CM2040 Database Networks and the Web ###
+# Event Management Web Application
 
-#### Installation requirements ####
+This project implements a **multi-tenant event management platform** with secure organiser authentication, event publishing workflows, ticket booking, and an attendee-facing public interface.
 
-* NodeJS 
-    - follow the install instructions at https://nodejs.org/en/
-    - we recommend using the latest LTS version
-* Sqlite3 
-    - follow the instructions at https://www.tutorialspoint.com/sqlite/sqlite_installation.htm 
-    - Note that the latest versions of the Mac OS and Linux come with SQLite pre-installed
+---
 
-#### Using this template ####
+## Installation Requirements
 
-This template sets you off in the right direction for your coursework. To get started:
+- **Node.js**  
+  Download and install from [https://nodejs.org/en/](https://nodejs.org/en/).  
+  *(Latest LTS version recommended.)*
 
-* Run ```npm install``` from the project directory to install all the node packages.
+- **SQLite3**  
+  Install from [https://www.tutorialspoint.com/sqlite/sqlite_installation.htm](https://www.tutorialspoint.com/sqlite/sqlite_installation.htm).  
+  *(Most MacOS and Linux systems already have SQLite pre-installed.)*
 
-* Run ```npm run build-db``` to create the database on Mac or Linux 
-or run ```npm run build-db-win``` to create the database on Windows
+---
 
-* Run ```npm run start``` to start serving the web app (Access via http://localhost:3000)
+## Setup Instructions
 
-Test the app by browsing to the following routes:
-
-* http://localhost:3000
-* http://localhost:3000/organiser 
-* http://localhost:3000/organiser/settings 
-* http://localhost:3000/organiser/events/edit/1 
-* http://localhost:3000/attendee
-* http://localhost:3000/attendee/event/1
+1. Install dependencies:
+    npm install
 
 
-You can also run: 
-```npm run clean-db``` to delete the database on Mac or Linux before rebuilding it for a fresh start
-```npm run clean-db-win``` to delete the database on Windows before rebuilding it for a fresh start
+2. Build the database:
 
-Please also read the document ```Working with this Template.pdf``` for further guidance.
+- **Mac / Linux:**
+  ```
+  npm run build-db
+  ```
+- **Windows:**
+  ```
+  npm run build-db-win
+  ```
 
-##### Creating database tables #####
+3. Start the server:
+    npm run start 
 
-* All database tables should created by modifying the db_schema.sql 
-* This allows us to review and recreate your database simply by running ```npm run build-db```
-* Do NOT create or alter database tables through other means
+4. Visit in your browser:
+http://localhost:3000 
+
+---
+
+## Test Routes
+
+Use the following URLs to verify core functionality:
+
+### Main Entry Point
+
+- **Main Home Page**
+http://localhost:3000 
+
+### Organiser Area *(requires login)*
+
+- **Register**
+http://localhost:3000/organiser/register
+
+- **Login**
+http://localhost:3000/organiser/login
+
+- **Organiser Home**
+http://localhost:3000/organiser
+
+- **Site Settings**
+http://localhost:3000/organiser/settings
+
+- **Create Event**
+*Submit POST to* `/organiser/create` *(via the organiser home page button)*
+
+- **Edit Event**
+http://localhost:3000/organiser/events/edit/1
+
+- **Publish Event**
+*Submit POST to* `/organiser/publish/{eventID}`
+
+- **Delete Event**
+*Submit POST to* `/organiser/delete/{eventID}`
+
+- **Logout**
+http://localhost:3000/organiser/logout
+
+### Attendee Area *(public)*
+
+- **Attendee Home Page**
+http://localhost:3000/attendee
+
+- **Event Detail & Booking**
+http://localhost:3000/attendee/event/2
+
+---
+
+## Additional Libraries Used
+
+The following Node.js packages are used:
+
+- `express`
+- `ejs`
+- `sqlite3`
+- `bcrypt`
+- `express-session`
+
+These dependencies are declared in `package.json`.
+
+---
+
+## Special Notes
+
+- **Database Creation**
+All tables are defined in `db_schema.sql`.  
+You must use `npm run build-db` to create the database.
+- **Sessions**
+Organiser authentication uses `express-session` for login persistence.
+- **Password Hashing**
+Organiser passwords are securely hashed with `bcrypt`.
+- **Multi-tenancy**
+Each organiser can manage their own events and site settings privately.
 
 
-#### Preparing for submission ####
-
-Make a copy of your project folder.
-In your copy, delete the following files and folders:
-* node_modules
-* .git (the hidden folder with your git repository)
-* database.db (your database)
-
-Make sure that your ``package.json`` file includes all of the dependencies for your project. NB. you need to use the ```--save``` tag each time you use npm to install a dependency
-
-Edit this README.md to explain any specific instructions for setting up or using your application that you want to bring to our attention:
-
-* remove the existing contents that we have provided
-* include any settings that should be adjusted in configuration files
-* include a list of the additional libraries you are using
-* anything else we need to know in order to successfully run your app
 
 
-NB. we will ONLY run ```npm install```, ```npm run build-db```, and ```npm run start``` . We will NOT install additional packages to run your code and will NOT run additional build scripts. Be careful with any additional node dependencies that you use.
+
 
